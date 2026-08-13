@@ -1,0 +1,10 @@
+# Carpetas de export de diseño no usadas por el sitio (index.html no las referencia)
+exported_assets/
+exported_assets final/
+
+# Archivos del sistema operativo / editor
+.DS_Store
+Thumbs.db
+
+# Configuración local de Claude Code
+.claude/
