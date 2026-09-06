@@ -1,5 +1,14 @@
 @import './tokens.css';
 
+/* Self-hosted Figtree (variable, latin subset) — substitute for the licensed Carmen Sans */
+@font-face {
+  font-family: 'Figtree';
+  src: url('../assets/fonts/figtree-latin.woff2') format('woff2');
+  font-weight: 300 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 *,
 *::before,
 *::after {

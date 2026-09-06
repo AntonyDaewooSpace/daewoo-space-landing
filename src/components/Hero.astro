@@ -1,16 +1,19 @@
 ---
-import { Image } from 'astro:assets';
-import poster from '../assets/hero-poster.png';
+import { Image, getImage } from 'astro:assets';
+import posterImg from '../assets/hero-poster.png';
 import { withBase } from '../lib/url';
+
+// optimized poster for the <video poster> attribute (the visible <Image> is optimized separately)
+const posterWebp = await getImage({ src: posterImg, width: 1280, format: 'webp' });
 ---
 
 <section class="hero" id="inicio" aria-label="Presentación Daewoo">
   <div class="stage">
     <Image
       class="poster"
-      src={poster}
+      src={posterImg}
       alt="Nueva línea Daewoo NeoXVision con Google TV"
-      widths={[640, 960, 1280, 1712]}
+      widths={[480, 768, 1280, 1600]}
       sizes="100vw"
       loading="eager"
       fetchpriority="high"
@@ -24,7 +27,7 @@ import { withBase } from '../lib/url';
       playsinline
       disablepictureinpicture
       preload="none"
-      poster={poster.src}
+      poster={posterWebp.src}
     >
       <source data-src={withBase('video/hero.webm')} type="video/webm" />
       <source data-src={withBase('video/hero.mp4')} type="video/mp4" />
@@ -35,11 +38,14 @@ import { withBase } from '../lib/url';
 <script>
   const hero = document.querySelector<HTMLElement>('.hero')!;
   const video = hero.querySelector<HTMLVideoElement>('.video')!;
+  const conn = (navigator as any).connection;
+  const saveData = conn?.saveData === true;
+  const slow = conn && /(^|-)2g$/.test(conn.effectiveType || '');
 
-  let loaded = false;
-  const load = () => {
-    if (loaded) return;
-    loaded = true;
+  let done = false;
+  const loadVideo = () => {
+    if (done) return;
+    done = true;
     video.querySelectorAll<HTMLSourceElement>('source[data-src]').forEach((s) => {
       s.src = s.dataset.src!;
     });
@@ -49,24 +55,39 @@ import { withBase } from '../lib/url';
 
   video.addEventListener('playing', () => hero.classList.add('is-playing'));
 
-  // load the video once the hero is on screen (or right after first paint if already visible)
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          load();
-          io.disconnect();
-        }
-      },
-      { rootMargin: '200px' },
-    );
-    io.observe(hero);
-  } else {
-    load();
+  // Don't autoload heavy video on data-saver / very slow links — poster stays.
+  if (!saveData && !slow) {
+    const kick = () => {
+      const start = () =>
+        'requestIdleCallback' in window
+          ? (window as any).requestIdleCallback(loadVideo, { timeout: 2500 })
+          : setTimeout(loadVideo, 1200);
+      // wait until the hero is on screen, then defer past first paint / LCP
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (e) => {
+            if (e.some((x) => x.isIntersecting)) {
+              io.disconnect();
+              start();
+            }
+          },
+          { rootMargin: '300px' },
+        );
+        io.observe(hero);
+      } else {
+        start();
+      }
+    };
+    if (document.readyState === 'complete') kick();
+    else window.addEventListener('load', kick, { once: true });
   }
-  // keep autoplay resilient if a browser blocks it until first interaction
+
+  // last-resort: honour autoplay after the first user gesture
   ['pointerdown', 'keydown', 'touchstart'].forEach((ev) =>
-    window.addEventListener(ev, () => video.play().catch(() => {}), { once: true, passive: true }),
+    window.addEventListener(ev, () => (loadVideo(), video.play().catch(() => {})), {
+      once: true,
+      passive: true,
+    }),
   );
 </script>
 
@@ -77,13 +98,13 @@ import { withBase } from '../lib/url';
   .stage {
     position: relative;
     width: 100%;
-    aspect-ratio: 1280 / 817;
+    aspect-ratio: 16 / 9;
     max-height: 86vh;
     overflow: hidden;
   }
   @media (max-width: 640px) {
     .stage {
-      aspect-ratio: 375 / 320;
+      aspect-ratio: 16 / 10;
     }
   }
   .poster,
@@ -93,6 +114,7 @@ import { withBase } from '../lib/url';
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
   }
   .video {
     opacity: 0;

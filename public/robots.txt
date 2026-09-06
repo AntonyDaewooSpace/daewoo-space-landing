@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://antonydaewoospace.github.io/daewoo-space-landing/sitemap-index.xml
