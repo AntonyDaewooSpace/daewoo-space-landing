@@ -1,0 +1,122 @@
+---
+import { Image } from 'astro:assets';
+import flags from '../assets/flags-pe-kr.png';
+import bg from '../assets/tvs-bg.png';
+import googleTv from '../assets/tech/google-tv.png';
+import dolby from '../assets/tech/dolby-atmos.png';
+import cast from '../assets/tech/google-cast.png';
+import heyGoogle from '../assets/tech/hey-google.png';
+import hdmi from '../assets/tech/hdmi.png';
+import hdr10 from '../assets/tech/hdr10.png';
+
+const logos = [
+  { src: dolby, alt: 'Dolby Atmos' },
+  { src: cast, alt: 'Google Cast' },
+  { src: heyGoogle, alt: 'Hey Google' },
+  { src: hdmi, alt: 'HDMI 2.1 Gaming' },
+  { src: hdr10, alt: 'HDR10+' },
+];
+---
+
+<section class="tech" id="tv">
+  <p class="warranty">
+    <Image src={flags} alt="Perú · Corea" width={278} height={21} />
+    <span>Garantía especial <strong>DAEWOO OFICIAL</strong></span>
+  </p>
+
+  <div class="tv">
+    <Image
+      class="tv-bg"
+      src={bg}
+      alt=""
+      aria-hidden="true"
+      widths={[768, 1280, 1920]}
+      sizes="100vw"
+    />
+    <div class="tv-inner" data-reveal>
+      <Image class="gtv" src={googleTv} alt="Google TV" width={178} height={36} />
+      <ul class="logos">
+        {logos.map((l) => (
+          <li><Image src={l.src} alt={l.alt} height={30} /></li>
+        ))}
+      </ul>
+      <p>
+        Descubre cómo los televisores con Google TV transforman tu forma de ver series, películas y
+        más. Todo lo que amas, en un solo lugar.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .warranty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.95rem 1rem;
+    background: var(--c-blue);
+    color: var(--c-white);
+    font-size: clamp(0.875rem, 0.82rem + 0.35vw, 1.0625rem);
+    font-weight: 500;
+    text-align: center;
+  }
+  .warranty :global(img) { height: 20px; width: auto; }
+
+  .tv {
+    position: relative;
+    isolation: isolate;
+    background: var(--c-black);
+    color: var(--c-white);
+    overflow: hidden;
+  }
+  .tv-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.38;
+    z-index: -1;
+  }
+  .tv::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.55) 45%, rgba(0, 0, 0, 0.2) 100%);
+    z-index: -1;
+  }
+
+  .tv-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.15rem;
+    max-width: 680px;
+    margin-left: max(var(--pad-x), calc((100vw - var(--container)) / 2));
+    padding-block: clamp(3rem, 7vw, 4rem);
+    padding-right: var(--pad-x);
+    text-align: left;
+  }
+  .gtv {
+    height: clamp(34px, 3.6vw, 46px);
+    width: auto;
+  }
+  .logos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem 1.15rem;
+    list-style: none;
+    padding: 0;
+  }
+  .logos :global(img) {
+    height: clamp(22px, 2.1vw, 27px);
+    width: auto;
+  }
+  .tv-inner p {
+    max-width: 52ch;
+    font-size: var(--fs-body);
+    color: var(--c-grey-light);
+  }
+</style>

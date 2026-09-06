@@ -1,0 +1,67 @@
+/* ============================================================
+   DAEWOO Landing — design tokens
+   Extracted from Figma "LANDING DAEWOO" (file Xh5iIF8q7x9uq945eSYRLH)
+   ============================================================ */
+:root {
+  /* -- Brand color -- */
+  --c-blue: #0062ae;          /* "Blue DAEWOO" */
+  --c-blue-700: #0060ab;      /* gradient pair (header) */
+  --c-blue-600: #0a6fbb;
+  --c-blue-hover: #00538f;
+  --c-blue-100: #b1cdfb;      /* form placeholders / accents on blue */
+
+  /* -- Neutrals -- */
+  --c-black: #000000;
+  --c-ink: #1c1c1c;           /* "Dark grey" — titles on light, footer bg */
+  --c-grey: #bfbfbf;          /* "grey" — legal text */
+  --c-grey-light: #ebebeb;    /* "very light grey" — secondary text on dark */
+  --c-white: #ffffff;
+  --c-hairline: rgba(255, 255, 255, 0.35);
+
+  /* -- Gradients -- */
+  --grad-header: linear-gradient(90deg, var(--c-blue) 0%, var(--c-blue-700) 100%);
+  --grad-card-front: linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, 0.85) 100%);
+  --grad-tv: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.9) 100%);
+
+  /* -- Category accents (Figma "linea de color"; confirm exact values) -- */
+  --acc-tv: #12b5d6;
+  --acc-lavadora: #7b61ff;
+  --acc-refrigeradora: #2f7ee0;
+  --acc-cocina: #ff7a2f;
+  --acc-microondas: #e5484d;
+  --acc-pilas: #37b24d;
+  --acc-aire: #17b6a5;
+
+  /* -- Typography -- */
+  --font-sans: 'Figtree', 'Carmen Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  /* fluid type scale (min = mobile Figma px, max = desktop Figma px, bumped for web legibility) */
+  --fs-eyebrow: 0.75rem;                                   /* 12 / 800 */
+  --fs-body: clamp(0.875rem, 0.82rem + 0.3vw, 1rem);       /* 14–16 / 400 */
+  --fs-body-sm: 0.8125rem;                                  /* 13 */
+  --fs-lead: clamp(1rem, 0.9rem + 0.6vw, 1.375rem);        /* intro paragraph */
+  --fs-h3: clamp(1.125rem, 0.95rem + 0.9vw, 1.5rem);       /* 18–24 section titles */
+  --fs-h2: clamp(1.375rem, 1.05rem + 1.6vw, 2rem);         /* 22–32 */
+  --fs-h1: clamp(1.75rem, 1.2rem + 2.7vw, 3rem);           /* hero / contact */
+  --fs-card-title: clamp(1rem, 0.9rem + 0.5vw, 1.1875rem);
+  --fs-card-text: clamp(0.8125rem, 0.78rem + 0.2vw, 0.875rem);
+
+  --lh-tight: 1.15;
+  --lh-snug: 1.35;
+  --lh-body: 1.6;
+
+  /* -- Layout -- */
+  --container: 1240px;        /* content width (Figma 1121 @1280 frame, widened for large screens) */
+  --container-wide: 1440px;
+  --pad-x: clamp(1.15rem, 3vw, 3rem);   /* section side padding */
+  --header-h: 88px;
+  --header-h-mobile: 61px;
+  --radius: 12px;             /* buttons */
+  --radius-card: 14px;
+
+  /* -- Elevation & motion -- */
+  --shadow-card: 0 18px 40px -12px rgba(0, 0, 0, 0.45);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --section-y: clamp(3rem, 8vw, 5rem);
+}

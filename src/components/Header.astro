@@ -1,0 +1,160 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logos/daewoo-white.png';
+import { nav } from '../data/site';
+import { BASE, withBase } from '../lib/url';
+
+const link = (href: string) => (href.startsWith('#') ? withBase(href) : href);
+---
+
+<header class="site-header" id="top">
+  <div class="bar container">
+    <a href={BASE} class="logo" aria-label="Daewoo — inicio">
+      <Image src={logo} alt="Daewoo" width={214} height={32} loading="eager" />
+    </a>
+
+    <button
+      class="burger"
+      type="button"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="site-nav"
+    >
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav id="site-nav" class="nav" aria-label="Principal">
+      <ul>
+        {nav.map((item) => (
+          <li><a href={link(item.href)}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('.site-header')!;
+  const burger = header.querySelector<HTMLButtonElement>('.burger')!;
+  const navEl = header.querySelector<HTMLElement>('#site-nav')!;
+
+  const setOpen = (open: boolean) => {
+    header.classList.toggle('is-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+  };
+
+  burger.addEventListener('click', () => setOpen(!header.classList.contains('is-open')));
+  navEl.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).tagName === 'A') setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  // shrink the bar after scrolling past the hero
+  const onScroll = () => header.classList.toggle('is-compact', window.scrollY > 60);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--grad-header);
+    color: var(--c-white);
+  }
+
+  .site-header {
+    transition: box-shadow 0.25s var(--ease);
+  }
+  .site-header.is-compact {
+    box-shadow: 0 4px 18px -6px rgba(0, 0, 0, 0.45);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    min-height: var(--header-h-mobile);
+    transition: min-height 0.25s var(--ease);
+  }
+  .is-compact .bar {
+    min-height: 48px;
+  }
+
+  .logo :global(img) {
+    height: 20px;
+    width: auto;
+    transition: height 0.25s var(--ease);
+  }
+  .is-compact .logo :global(img) {
+    height: 17px;
+  }
+
+  .nav ul {
+    display: flex;
+    gap: 0.25rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .nav a {
+    display: block;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c-grey-light);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: color 0.15s var(--ease), background 0.15s var(--ease);
+  }
+  .nav a:hover { color: var(--c-white); background: rgba(255, 255, 255, 0.12); }
+  .is-compact .nav a { padding-block: 0.5rem; }
+
+  .burger {
+    display: grid;
+    gap: 4px;
+    width: 40px;
+    padding: 8px 6px;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+  .burger span {
+    height: 2px;
+    background: var(--c-white);
+    border-radius: 2px;
+    transition: transform 0.25s var(--ease), opacity 0.2s var(--ease);
+  }
+
+  @media (min-width: 861px) {
+    .bar { min-height: var(--header-h); }
+    .is-compact .bar { min-height: 58px; }
+    .logo :global(img) { height: 26px; }
+    .is-compact .logo :global(img) { height: 20px; }
+    .burger { display: none; }
+  }
+
+  @media (max-width: 860px) {
+    .nav {
+      position: absolute;
+      inset: 100% 0 auto 0;
+      background: var(--c-blue-700);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s var(--ease);
+    }
+    .nav ul { flex-direction: column; gap: 0; padding: 0.5rem var(--pad-x) 1rem; }
+    .nav a { padding: 0.9rem 0; font-size: 0.8125rem; }
+    .site-header.is-open .nav { max-height: 60vh; }
+    .site-header.is-open .burger span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .site-header.is-open .burger span:nth-child(2) { opacity: 0; }
+    .site-header.is-open .burger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  }
+</style>

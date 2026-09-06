@@ -1,0 +1,200 @@
+---
+const formspreeId = import.meta.env.PUBLIC_FORMSPREE_ID ?? '';
+const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL ?? 'servicios@daewoo.space';
+const action = formspreeId ? `https://formspree.io/f/${formspreeId}` : `mailto:${contactEmail}`;
+
+const fields = [
+  { name: 'empresa', label: 'Empresa', type: 'text', placeholder: 'Distribuidora S.A.C', required: true, half: true },
+  { name: 'ruc', label: 'RUC (opcional)', type: 'text', placeholder: '20123456789', required: false, half: true, inputmode: 'numeric' },
+  { name: 'nombre', label: 'Nombre', type: 'text', placeholder: 'Escribe tu nombre', required: true, half: true },
+  { name: 'correo', label: 'Correo', type: 'email', placeholder: 'Escribe tu correo', required: true, half: true },
+  { name: 'ciudad', label: 'Ciudad', type: 'text', placeholder: 'Lima', required: true, half: true },
+  { name: 'telefono', label: 'Teléfono', type: 'tel', placeholder: '+51 999 999 999', required: true, half: true, inputmode: 'tel' },
+];
+---
+
+<section class="contact" id="contacto">
+  <div class="container grid" data-reveal>
+    <div class="cta">
+      <h2>Impulsa tu negocio con Daewoo</h2>
+      <p>Conoce nuestro catálogo o únete a nuestra red de distribuidores oficiales.</p>
+    </div>
+
+    <form class="form" action={action} method="POST" data-formspree={formspreeId ? 'true' : 'false'} novalidate>
+      <div class="rows">
+        {fields.map((f) => (
+          <label class:list={['field', { half: f.half }]}>
+            <span>{f.label}</span>
+            <input
+              type={f.type}
+              name={f.name}
+              placeholder={f.placeholder}
+              required={f.required}
+              inputmode={f.inputmode as any}
+              autocomplete="on"
+            />
+          </label>
+        ))}
+        <label class="field">
+          <span>Mensaje</span>
+          <textarea name="mensaje" rows="2" placeholder="Escribe tu mensaje"></textarea>
+        </label>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" name="consentimiento" required />
+        <span>Autorizo el uso de mis datos para ser contactado por DAEWOO.</span>
+      </label>
+
+      <button class="submit" type="submit">
+        <span>Enviar</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <p class="status" role="status" aria-live="polite" hidden></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('.contact .form')!;
+  const status = form.querySelector<HTMLParagraphElement>('.status')!;
+  const btn = form.querySelector<HTMLButtonElement>('.submit')!;
+  const usesFormspree = form.dataset.formspree === 'true';
+
+  const say = (msg: string, ok: boolean) => {
+    status.textContent = msg;
+    status.hidden = false;
+    status.classList.toggle('is-error', !ok);
+  };
+
+  form.addEventListener('submit', async (e) => {
+    if (!form.reportValidity()) {
+      e.preventDefault();
+      return;
+    }
+    if (!usesFormspree) return; // let mailto: proceed
+
+    e.preventDefault();
+    btn.disabled = true;
+    say('Enviando…', true);
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) {
+        form.reset();
+        say('¡Gracias! Nuestro equipo comercial te contactará pronto.', true);
+      } else {
+        say('No pudimos enviar el formulario. Escríbenos a servicios@daewoo.space.', false);
+      }
+    } catch {
+      say('Sin conexión. Inténtalo de nuevo o escríbenos a servicios@daewoo.space.', false);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .contact {
+    background: var(--c-blue);
+    color: var(--c-white);
+    padding-block: var(--section-y);
+  }
+  .grid {
+    display: grid;
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: center;
+  }
+  @media (min-width: 861px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .cta h2 {
+    font-size: var(--fs-h1);
+    font-weight: 900;
+  }
+  .cta p {
+    margin-top: 0.85rem;
+    font-size: var(--fs-lead);
+    color: var(--c-grey-light);
+    max-width: 32ch;
+  }
+
+  .rows {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem 1.5rem;
+  }
+  .field { display: flex; flex-direction: column; gap: 0.3rem; grid-column: 1 / -1; }
+  .field.half { grid-column: span 1; }
+  @media (max-width: 520px) {
+    .field.half { grid-column: 1 / -1; }
+  }
+
+  .field > span {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .field input,
+  .field textarea {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--c-hairline);
+    padding: 0.5rem 0;
+    color: var(--c-white);
+    resize: vertical;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder { color: var(--c-blue-100); }
+  .field input:focus-visible,
+  .field textarea:focus-visible {
+    outline: 0;
+    border-bottom-color: var(--c-white);
+  }
+
+  .consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    margin-top: 1.1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .consent input {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 0.15rem;
+    accent-color: var(--c-white);
+  }
+
+  .submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+    padding: 0.7rem 1.4rem;
+    background: var(--c-white);
+    color: var(--c-black);
+    font-weight: 700;
+    font-size: 0.8125rem;
+    border: 0;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease);
+  }
+  .submit:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.4); }
+  .submit:disabled { opacity: 0.6; cursor: progress; }
+  .submit svg { width: 18px; }
+
+  .status {
+    margin-top: 0.9rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .status.is-error { color: #ffd7d7; }
+</style>

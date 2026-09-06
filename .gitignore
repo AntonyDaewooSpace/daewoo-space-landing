@@ -1,10 +1,27 @@
-# Carpetas de export de diseño no usadas por el sitio (index.html no las referencia)
-exported_assets/
-exported_assets final/
+# build output
+dist/
+.output/
+.vercel/
+.netlify/
 
-# Archivos del sistema operativo / editor
+# dependencies
+node_modules/
+
+# astro
+.astro/
+
+# env
+.env
+.env.production
+.env.local
+
+# source design assets (kept out of the app repo; re-export from Figma)
+figma-assets/
+
+# raw source media (originals) — the compressed web versions in public/video are committed
+media-src/
+
+# os / editor
 .DS_Store
 Thumbs.db
-
-# Configuración local de Claude Code
-.claude/
+*.log

@@ -1,0 +1,28 @@
+---
+import { Image } from 'astro:assets';
+import desktop from '../assets/portada.png';
+import mobile from '../assets/portada-mobile.png';
+---
+
+<section class="showcase" aria-label="Redefinimos la conectividad del hogar">
+  <picture>
+    <source media="(max-width: 640px)" srcset={mobile.src} width={mobile.width} height={mobile.height} />
+    <Image
+      src={desktop}
+      alt="Redefinimos la conectividad del hogar, porque la verdadera vanguardia evoluciona. Cocina, televisor, refrigeradora y lavadora Daewoo."
+      widths={[640, 960, 1280, 1600]}
+      sizes="100vw"
+    />
+  </picture>
+</section>
+
+<style>
+  .showcase {
+    background: #00081a;
+  }
+  .showcase picture,
+  .showcase :global(img) {
+    width: 100%;
+    height: auto;
+  }
+</style>

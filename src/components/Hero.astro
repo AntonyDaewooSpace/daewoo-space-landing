@@ -1,0 +1,107 @@
+---
+import { Image } from 'astro:assets';
+import poster from '../assets/hero-poster.png';
+import { withBase } from '../lib/url';
+---
+
+<section class="hero" id="inicio" aria-label="Presentación Daewoo">
+  <div class="stage">
+    <Image
+      class="poster"
+      src={poster}
+      alt="Nueva línea Daewoo NeoXVision con Google TV"
+      widths={[640, 960, 1280, 1712]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+    />
+
+    <video
+      class="video"
+      autoplay
+      muted
+      loop
+      playsinline
+      disablepictureinpicture
+      preload="none"
+      poster={poster.src}
+    >
+      <source data-src={withBase('video/hero.webm')} type="video/webm" />
+      <source data-src={withBase('video/hero.mp4')} type="video/mp4" />
+    </video>
+  </div>
+</section>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('.hero')!;
+  const video = hero.querySelector<HTMLVideoElement>('.video')!;
+
+  let loaded = false;
+  const load = () => {
+    if (loaded) return;
+    loaded = true;
+    video.querySelectorAll<HTMLSourceElement>('source[data-src]').forEach((s) => {
+      s.src = s.dataset.src!;
+    });
+    video.load();
+    video.play().then(() => hero.classList.add('is-playing')).catch(() => {});
+  };
+
+  video.addEventListener('playing', () => hero.classList.add('is-playing'));
+
+  // load the video once the hero is on screen (or right after first paint if already visible)
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          load();
+          io.disconnect();
+        }
+      },
+      { rootMargin: '200px' },
+    );
+    io.observe(hero);
+  } else {
+    load();
+  }
+  // keep autoplay resilient if a browser blocks it until first interaction
+  ['pointerdown', 'keydown', 'touchstart'].forEach((ev) =>
+    window.addEventListener(ev, () => video.play().catch(() => {}), { once: true, passive: true }),
+  );
+</script>
+
+<style>
+  .hero {
+    background: var(--c-black);
+  }
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1280 / 817;
+    max-height: 86vh;
+    overflow: hidden;
+  }
+  @media (max-width: 640px) {
+    .stage {
+      aspect-ratio: 375 / 320;
+    }
+  }
+  .poster,
+  .video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .video {
+    opacity: 0;
+    transition: opacity 0.5s var(--ease);
+  }
+  .is-playing .video {
+    opacity: 1;
+  }
+  .is-playing .poster {
+    opacity: 0;
+  }
+</style>
