@@ -5,6 +5,8 @@ Landing de marca construida con [Astro](https://astro.build). Basada en el Figma
 
 **En producción:** https://antonydaewoospace.github.io/daewoo-space-landing/
 
+Lighthouse (live): **Perf 97 móvil / 100 desktop · A11y 100 · Best Practices 100 · SEO 100** · LCP ~1.5 s · CLS 0.
+
 ## Desarrollo
 
 ```bash
@@ -46,8 +48,9 @@ Recomprimir el video: `node scripts/encode-video.mjs` (usa el ffmpeg de `devDepe
 
 ## Pendientes antes de producción
 
-- [ ] **Tipografía**: se usa `Figtree` (Google Fonts) como sustituto de `Carmen Sans`
-      (comercial). Si se licencia Carmen Sans, colocar los `.woff2` y ajustar `--font-sans`.
+- [ ] **Tipografía**: `Figtree` self-hosted (`src/assets/fonts/figtree-latin.woff2`, variable
+      300–900, subset latin) como sustituto de `Carmen Sans` (comercial). Si se licencia
+      Carmen Sans, reemplazar el woff2 y el `@font-face` en `global.css`.
 - [x] ~~Video del hero comprimido~~ → `hero.mp4` (13 MB) + `hero.webm` (9.5 MB), 1080p. Autoplay + loop + muted, sin controles, carga diferida.
 - [x] ~~Formspree~~ → form "Contacto Daewoo", `PUBLIC_FORMSPREE_ID=xyeydknw` en `.env` (no se commitea; setear también en el hosting).
 - [ ] **Formspree → notificar a servicios@daewoo.space**: en Formspree, form Settings → añadir esa dirección como recipient; Formspree envía un correo de verificación que hay que confirmar desde esa casilla. Revisar spam. El plan free solo notifica al correo de la cuenta hasta verificar el adicional.
