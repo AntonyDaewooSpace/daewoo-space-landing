@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import daewooSpace from '../assets/logos/daewoo-space.png';
 import badge from '../assets/logos/50-years-daewoo.png';
-import bg from '../assets/footer-bg.png';
+import art from '../assets/footer-art.png';
 import { social, legal } from '../data/site';
 import { withBase } from '../lib/url';
 
@@ -17,7 +17,7 @@ const icons: Record<string, string> = {
 ---
 
 <footer class="footer">
-  <Image class="footer-art" src={bg} alt="" aria-hidden="true" widths={[900, 1400, 2008]} sizes="100vw" />
+  <Image class="footer-art" src={art} alt="" aria-hidden="true" widths={[420, 640, 813]} sizes="46vw" />
   <div class="container">
     <div class="top" data-reveal>
       <Image class="brand-logo" src={daewooSpace} alt="Daewoo Space" width={194} height={30} />
@@ -58,40 +58,39 @@ const icons: Record<string, string> = {
     color: var(--c-white);
     padding-block: clamp(2.5rem, 7vw, 4.5rem);
     overflow: hidden;
-    background-color: #101010;
+    background-color: #0d0d0d;
   }
   .footer-art {
     position: absolute;
+    top: clamp(-1.5rem, -1vw, 0px);
     right: 0;
-    bottom: 0;
     z-index: -2;
     width: auto;
-    height: 100%;
-    max-width: none;
+    height: min(64%, 300px);
     pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 26%);
+    mask-image: linear-gradient(90deg, transparent, #000 26%);
   }
   .footer::after {
-    /* darken the left side so the copy stays legible over the artwork */
+    /* keep the copy legible on the left */
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, #101010 32%, rgba(16, 16, 16, 0.7) 58%, rgba(16, 16, 16, 0.1) 100%);
+    background: linear-gradient(90deg, #0d0d0d 34%, rgba(13, 13, 13, 0.55) 62%, rgba(13, 13, 13, 0) 100%);
     z-index: -1;
     pointer-events: none;
   }
 
-  @media (max-width: 780px) {
+  @media (max-width: 720px) {
     .footer-art {
-      max-width: 100%;
       height: auto;
-      width: 130%;
-      right: -15%;
-      opacity: 0.55;
+      width: 78%;
+      opacity: 0.5;
     }
   }
 
   .top {
-    padding-bottom: 2.5rem;
+    padding-bottom: clamp(3rem, 8vw, 5rem);
   }
   .brand-logo {
     height: 30px;
@@ -126,18 +125,18 @@ const icons: Record<string, string> = {
 
   .meta {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 1rem 2rem;
-    padding-block: 1.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+    justify-content: space-between;
+    gap: 1.25rem 2.5rem;
+    padding-block: 1.35rem;
+    border-top: 1px solid #4a4a4a;
+    border-bottom: 1px solid #4a4a4a;
     font-size: 0.75rem;
     color: var(--c-grey-light);
   }
-  .copy { flex: 1 1 260px; }
+  .copy { max-width: 42ch; }
   .social { display: flex; align-items: center; gap: 0.75rem; }
-  .social ul { display: flex; gap: 0.9rem; list-style: none; padding: 0; }
+  .social ul { display: flex; gap: 0.9rem; list-style: none; padding: 0; margin: 0; }
   .social a {
     display: grid;
     place-items: center;
@@ -146,13 +145,21 @@ const icons: Record<string, string> = {
   }
   .social a:hover { color: var(--c-white); transform: translateY(-2px); }
   .social svg { width: 17px; height: 17px; }
-  .terms { color: var(--c-grey-light); text-decoration: none; }
+  .terms { color: var(--c-grey-light); text-decoration: none; white-space: nowrap; }
   .terms:hover { color: var(--c-white); text-decoration: underline; }
 
   .legal {
-    margin-top: 1.75rem;
+    margin-top: 1.6rem;
     font-size: 0.6875rem;
     line-height: 1.55;
     color: var(--c-grey);
+  }
+
+  @media (max-width: 720px) {
+    .meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
   }
 </style>

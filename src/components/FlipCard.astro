@@ -10,7 +10,13 @@ interface Props {
 const { category, clone = false } = Astro.props;
 ---
 
-<article class="card" style={`--accent:${category.accent}`} aria-hidden={clone ? 'true' : undefined}>
+<article
+  class="card"
+  style={`--accent:${category.accent}`}
+  aria-hidden={clone ? 'true' : undefined}
+  tabindex={clone ? undefined : '0'}
+  aria-label={clone ? undefined : `${category.name} — pulsa para ver el detalle`}
+>
   <div class="inner">
     <div class="face front">
       <Image
@@ -26,18 +32,12 @@ const { category, clone = false } = Astro.props;
         <h3>{category.frontTitle}</h3>
         <p>{category.frontText}</p>
       </div>
-      <button class="flip-btn" type="button" aria-pressed="false" aria-label={`Ver detalle de ${category.name}`} tabindex={clone ? -1 : undefined}>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
-      </button>
     </div>
 
     <div class="face back">
       <span class="tag">{category.name}</span>
       <h4>{category.backTitle}</h4>
       <p>{category.backText}</p>
-      <button class="flip-btn back-btn" type="button" aria-label="Volver" tabindex={clone ? -1 : undefined}>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
     </div>
   </div>
 </article>
@@ -48,6 +48,12 @@ const { category, clone = false } = Astro.props;
     width: min(80vw, 345px);
     aspect-ratio: 345 / 292;
     perspective: 1200px;
+    cursor: pointer;
+    border-radius: var(--radius-card);
+  }
+  .card:focus-visible {
+    outline: 2px solid var(--c-blue-100);
+    outline-offset: 4px;
   }
 
   .inner {
@@ -65,13 +71,6 @@ const { category, clone = false } = Astro.props;
     .card:not(.is-flipped):hover .inner {
       transform: rotateY(180deg);
     }
-    /* the +/- button is only needed for keyboard users here */
-    .flip-btn {
-      opacity: 0;
-    }
-    .card:focus-within .flip-btn {
-      opacity: 1;
-    }
   }
 
   .face {
@@ -81,13 +80,6 @@ const { category, clone = false } = Astro.props;
     border-radius: var(--radius-card);
     overflow: hidden;
     box-shadow: var(--shadow-card);
-  }
-  /* only the face pointing at the viewer is interactive */
-  .card:not(.is-flipped) .back {
-    pointer-events: none;
-  }
-  .card.is-flipped .front {
-    pointer-events: none;
   }
 
   /* front */
@@ -175,76 +167,48 @@ const { category, clone = false } = Astro.props;
     background: rgba(255, 255, 255, 0.25);
     border-radius: 3px;
   }
-
-  /* flip control */
-  .flip-btn {
-    position: absolute;
-    right: 0.6rem;
-    z-index: 2;
-    display: grid;
-    place-items: center;
-    width: 30px;
-    aspect-ratio: 1;
-    color: var(--c-white);
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
-    cursor: pointer;
-    backdrop-filter: blur(3px);
-    transition: background 0.15s var(--ease), transform 0.15s var(--ease), opacity 0.15s var(--ease);
-  }
-  .flip-btn:hover {
-    background: var(--c-blue);
-    transform: scale(1.1);
-  }
-  .flip-btn svg {
-    width: 14px;
-  }
-  .front .flip-btn {
-    top: 0.6rem;
-  }
-  .back .flip-btn {
-    bottom: 0.6rem;
-  }
 </style>
 
 <script>
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
-    const setFlip = (state: boolean) => {
-      card.classList.toggle('is-flipped', state);
-      card.querySelector('.front .flip-btn')?.setAttribute('aria-pressed', String(state));
+  document.querySelectorAll<HTMLElement>('.card:not([aria-hidden])').forEach((card) => {
+    const toggle = (state?: boolean) => {
+      const next = state ?? !card.classList.contains('is-flipped');
+      card.classList.toggle('is-flipped', next);
     };
 
-    // buttons (keyboard + explicit taps)
-    card.querySelectorAll<HTMLButtonElement>('.flip-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        setFlip(!card.classList.contains('is-flipped'));
-      });
-    });
-
     if (canHover) {
-      // desktop: hover drives it; clear any manual flip on leave so hover stays authoritative
-      card.addEventListener('mouseleave', () => setFlip(false));
+      // desktop: hover handles it; clear any lingering flip on leave
+      card.addEventListener('mouseleave', () => toggle(false));
     } else {
-      // touch: tap anywhere on the card toggles (ignore taps that are part of a swipe)
+      // touch: tap anywhere flips — but ignore taps that were really a swipe
       let x = 0,
         y = 0,
-        moved = false;
+        drag = false;
       card.addEventListener('pointerdown', (e) => {
         x = e.clientX;
         y = e.clientY;
-        moved = false;
+        drag = false;
       });
-      card.addEventListener('pointermove', (e) => {
-        if (Math.abs(e.clientX - x) > 10 || Math.abs(e.clientY - y) > 10) moved = true;
-      });
-      card.addEventListener('pointerup', (e) => {
-        if (moved || (e.target as HTMLElement).closest('.flip-btn')) return;
-        setFlip(!card.classList.contains('is-flipped'));
+      card.addEventListener(
+        'pointermove',
+        (e) => {
+          if (Math.abs(e.clientX - x) > 12 || Math.abs(e.clientY - y) > 12) drag = true;
+        },
+        { passive: true },
+      );
+      card.addEventListener('pointerup', () => {
+        if (!drag) toggle();
       });
     }
+
+    // keyboard
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
   });
 </script>
