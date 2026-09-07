@@ -26,8 +26,7 @@ const { category, clone = false } = Astro.props;
         <h3>{category.frontTitle}</h3>
         <p>{category.frontText}</p>
       </div>
-      <button class="flip-btn" type="button" aria-pressed="false" tabindex={clone ? -1 : undefined}>
-        <span class="visually-hidden">Ver detalle de {category.name}</span>
+      <button class="flip-btn" type="button" aria-pressed="false" aria-label={`Ver detalle de ${category.name}`} tabindex={clone ? -1 : undefined}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -36,8 +35,7 @@ const { category, clone = false } = Astro.props;
       <span class="tag">{category.name}</span>
       <h4>{category.backTitle}</h4>
       <p>{category.backText}</p>
-      <button class="flip-btn back-btn" type="button" tabindex={clone ? -1 : undefined}>
-        <span class="visually-hidden">Volver</span>
+      <button class="flip-btn back-btn" type="button" aria-label="Volver" tabindex={clone ? -1 : undefined}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
@@ -61,6 +59,19 @@ const { category, clone = false } = Astro.props;
   }
   .card.is-flipped .inner {
     transform: rotateY(180deg);
+  }
+  /* laptop / mouse: flip on hover */
+  @media (hover: hover) and (pointer: fine) {
+    .card:not(.is-flipped):hover .inner {
+      transform: rotateY(180deg);
+    }
+    /* the +/- button is only needed for keyboard users here */
+    .flip-btn {
+      opacity: 0;
+    }
+    .card:focus-within .flip-btn {
+      opacity: 1;
+    }
   }
 
   .face {
@@ -180,7 +191,7 @@ const { category, clone = false } = Astro.props;
     border-radius: 50%;
     cursor: pointer;
     backdrop-filter: blur(3px);
-    transition: background 0.15s var(--ease), transform 0.15s var(--ease);
+    transition: background 0.15s var(--ease), transform 0.15s var(--ease), opacity 0.15s var(--ease);
   }
   .flip-btn:hover {
     background: var(--c-blue);
@@ -198,13 +209,42 @@ const { category, clone = false } = Astro.props;
 </style>
 
 <script>
+  const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
   document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
+    const setFlip = (state: boolean) => {
+      card.classList.toggle('is-flipped', state);
+      card.querySelector('.front .flip-btn')?.setAttribute('aria-pressed', String(state));
+    };
+
+    // buttons (keyboard + explicit taps)
     card.querySelectorAll<HTMLButtonElement>('.flip-btn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const flipped = card.classList.toggle('is-flipped');
-        card.querySelector('.front .flip-btn')?.setAttribute('aria-pressed', String(flipped));
+        setFlip(!card.classList.contains('is-flipped'));
       });
     });
+
+    if (canHover) {
+      // desktop: hover drives it; clear any manual flip on leave so hover stays authoritative
+      card.addEventListener('mouseleave', () => setFlip(false));
+    } else {
+      // touch: tap anywhere on the card toggles (ignore taps that are part of a swipe)
+      let x = 0,
+        y = 0,
+        moved = false;
+      card.addEventListener('pointerdown', (e) => {
+        x = e.clientX;
+        y = e.clientY;
+        moved = false;
+      });
+      card.addEventListener('pointermove', (e) => {
+        if (Math.abs(e.clientX - x) > 10 || Math.abs(e.clientY - y) > 10) moved = true;
+      });
+      card.addEventListener('pointerup', (e) => {
+        if (moved || (e.target as HTMLElement).closest('.flip-btn')) return;
+        setFlip(!card.classList.contains('is-flipped'));
+      });
+    }
   });
 </script>
