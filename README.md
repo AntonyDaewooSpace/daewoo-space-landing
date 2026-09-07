@@ -40,7 +40,7 @@ npm run deploy   # build + push de dist/ a gh-pages (Pages refresca en ~1 min)
 | `src/data/categories.ts` | Copys y assets de las 7 categorías del carrusel |
 | `src/data/site.ts` | Navegación, redes, textos legales |
 | `src/components/` | Una pieza por sección del Figma |
-| `src/assets/` | Imágenes optimizadas por Astro en build |
+| `src/assets/` | Imágenes fuente (Astro genera webp/densities en build). Todas provienen de `figma-assets/` |
 | `public/video/hero.mp4` / `hero.webm` | Video del hero comprimido 1080p (13 / 9.5 MB) |
 | `media-src/hero-src.mp4` | Original 88 MB — **no se commitea** (gitignored) |
 
