@@ -20,14 +20,14 @@ const icons: Record<string, string> = {
   <Image class="footer-art" src={bg} alt="" aria-hidden="true" widths={[900, 1400, 2008]} sizes="100vw" />
   <div class="container">
     <div class="top" data-reveal>
-      <div class="brand">
-        <Image src={daewooSpace} alt="Daewoo Space" width={194} height={30} />
+      <Image class="brand-logo" src={daewooSpace} alt="Daewoo Space" width={194} height={30} />
+      <div class="blurb">
         <p>
           Nos apasiona ofrecer experiencias de visualización innovadoras que te acercan a las
           historias que amas, con imágenes vibrantes, funciones inteligentes y diseños modernos.
         </p>
+        <Image class="badge" src={badge} alt="50 años Daewoo" width={167} height={67} />
       </div>
-      <Image class="badge" src={badge} alt="50 años Daewoo" width={167} height={67} />
     </div>
 
     <div class="meta">
@@ -91,17 +91,38 @@ const icons: Record<string, string> = {
   }
 
   .top {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1.5rem 3rem;
     padding-bottom: 2.5rem;
   }
-  .brand { max-width: 46ch; }
-  .brand :global(img) { height: 28px; width: auto; margin-bottom: 0.9rem; }
-  .brand p { font-size: 0.75rem; color: var(--c-grey-light); text-wrap: pretty; }
-  .badge { height: 60px; width: auto; }
+  .brand-logo {
+    height: 30px;
+    width: auto;
+    margin-bottom: 1rem;
+  }
+  .blurb {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    max-width: 480px;
+  }
+  .blurb p {
+    flex: 1;
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--c-grey-light);
+    text-align: justify;
+  }
+  .badge {
+    flex: none;
+    height: 62px;
+    width: auto;
+  }
+  @media (max-width: 560px) {
+    .blurb {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  }
 
   .meta {
     display: flex;
@@ -131,8 +152,7 @@ const icons: Record<string, string> = {
   .legal {
     margin-top: 1.75rem;
     font-size: 0.6875rem;
-    line-height: 1.5;
+    line-height: 1.55;
     color: var(--c-grey);
-    max-width: 100ch;
   }
 </style>
