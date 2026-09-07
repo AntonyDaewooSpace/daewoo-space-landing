@@ -20,7 +20,7 @@ const logos = [
 
 <section class="tech" id="tv">
   <p class="warranty">
-    <Image src={flags} alt="Perú · Corea" width={278} height={21} />
+    <Image src={flags} alt="Perú · Corea" width={278} height={21} densities={[1, 2]} />
     <span>Garantía especial <strong>DAEWOO OFICIAL</strong></span>
   </p>
 
@@ -34,10 +34,10 @@ const logos = [
       sizes="100vw"
     />
     <div class="tv-inner" data-reveal>
-      <Image class="gtv" src={googleTv} alt="Google TV" width={178} height={36} />
+      <Image class="gtv" src={googleTv} alt="Google TV" height={46} densities={[1, 2]} />
       <ul class="logos">
         {logos.map((l) => (
-          <li><Image src={l.src} alt={l.alt} height={30} /></li>
+          <li><Image src={l.src} alt={l.alt} height={30} densities={[1, 2]} /></li>
         ))}
       </ul>
       <p>

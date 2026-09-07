@@ -15,8 +15,9 @@ node_modules/
 .env.production
 .env.local
 
-# source design assets (kept out of the app repo; re-export from Figma)
+# source design assets (kept out of the app repo)
 figma-assets/
+_archive-logos/
 
 # raw source media (originals) — the compressed web versions in public/video are committed
 media-src/
