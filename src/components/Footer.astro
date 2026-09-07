@@ -17,9 +17,9 @@ const icons: Record<string, string> = {
 ---
 
 <footer class="footer">
-  <Image class="footer-art" src={art} alt="" aria-hidden="true" widths={[420, 640, 813]} sizes="46vw" />
   <div class="container">
     <div class="top" data-reveal>
+      <Image class="footer-art" src={art} alt="" aria-hidden="true" widths={[420, 640, 813]} sizes="52vw" />
       <Image class="brand-logo" src={daewooSpace} alt="Daewoo Space" width={194} height={30} />
       <div class="blurb">
         <p>
@@ -60,17 +60,6 @@ const icons: Record<string, string> = {
     overflow: hidden;
     background-color: #0d0d0d;
   }
-  .footer-art {
-    position: absolute;
-    top: clamp(-1.5rem, -1vw, 0px);
-    right: 0;
-    z-index: -2;
-    width: auto;
-    height: min(64%, 300px);
-    pointer-events: none;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 26%);
-    mask-image: linear-gradient(90deg, transparent, #000 26%);
-  }
   .footer::after {
     /* keep the copy legible on the left */
     content: '';
@@ -81,16 +70,33 @@ const icons: Record<string, string> = {
     pointer-events: none;
   }
 
-  @media (max-width: 720px) {
-    .footer-art {
-      height: auto;
-      width: 78%;
-      opacity: 0.5;
-    }
+  .top {
+    position: relative;
+    min-height: 380px;
+    padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  /* appliance render: its BOTTOM edge sits on the divider line */
+  .footer-art {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: -2;
+    width: min(50%, 520px);
+    height: auto;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 24%);
+    mask-image: linear-gradient(90deg, transparent, #000 24%);
   }
 
-  .top {
-    padding-bottom: clamp(3rem, 8vw, 5rem);
+  @media (max-width: 720px) {
+    .top {
+      min-height: 0;
+      padding-bottom: 12rem;
+    }
+    .footer-art {
+      width: 80%;
+      opacity: 0.5;
+    }
   }
   .brand-logo {
     height: 30px;

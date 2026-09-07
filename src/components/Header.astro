@@ -52,10 +52,32 @@ const link = (href: string) => (href.startsWith('#') ? withBase(href) : href);
     if (e.key === 'Escape') setOpen(false);
   });
 
-  // shrink the bar after scrolling past the hero
-  const onScroll = () => header.classList.toggle('is-compact', window.scrollY > 60);
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
+  // Compact bar on scroll. Hysteresis (on >140, off <30) so shrinking the sticky
+  // bar — which nudges the scroll position — can't oscillate around one threshold.
+  let compact = false;
+  let ticking = false;
+  const apply = () => {
+    ticking = false;
+    const y = window.scrollY;
+    if (!compact && y > 140) {
+      compact = true;
+      header.classList.add('is-compact');
+    } else if (compact && y < 30) {
+      compact = false;
+      header.classList.remove('is-compact');
+    }
+  };
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(apply);
+      }
+    },
+    { passive: true },
+  );
+  apply();
 </script>
 
 <style>
@@ -97,7 +119,7 @@ const link = (href: string) => (href.startsWith('#') ? withBase(href) : href);
     transition: min-height 0.25s var(--ease);
   }
   .is-compact .bar {
-    min-height: 48px;
+    min-height: 52px;
   }
 
   .logo :global(img) {
@@ -106,7 +128,7 @@ const link = (href: string) => (href.startsWith('#') ? withBase(href) : href);
     transition: height 0.25s var(--ease);
   }
   .is-compact .logo :global(img) {
-    height: 17px;
+    height: 18px;
   }
 
   .nav ul {
@@ -149,9 +171,9 @@ const link = (href: string) => (href.startsWith('#') ? withBase(href) : href);
 
   @media (min-width: 861px) {
     .bar { min-height: var(--header-h); }
-    .is-compact .bar { min-height: 58px; }
+    .is-compact .bar { min-height: 66px; }
     .logo :global(img) { height: 26px; }
-    .is-compact .logo :global(img) { height: 20px; }
+    .is-compact .logo :global(img) { height: 22px; }
     .burger { display: none; }
   }
 
