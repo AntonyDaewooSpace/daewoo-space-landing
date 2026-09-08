@@ -35,15 +35,13 @@ const { category, clone = false } = Astro.props;
     </div>
 
     <div class="face back">
-      <Image
-        class="back-art"
-        src={category.backImage}
-        alt={clone ? '' : `${category.name}: ${category.backTitle}`}
-        widths={[345, 520, 720]}
-        sizes="(max-width: 640px) 80vw, 345px"
-        loading="lazy"
-      />
-      {!clone && <p class="visually-hidden">{category.backText}</p>}
+      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={26} densities={[1, 2, 3]} loading="lazy" />
+      <p class="back-desc">{category.backText}</p>
+      <ul class="back-benefits" aria-hidden="true">
+        {category.backBenefits.map((b) => (
+          <li><Image src={b} alt="" height={34} densities={[1, 2, 3]} loading="lazy" /></li>
+        ))}
+      </ul>
     </div>
   </div>
 </article>
@@ -136,15 +134,62 @@ const { category, clone = false } = Astro.props;
     color: rgba(255, 255, 255, 0.82);
   }
 
-  /* back — full composed artwork */
+  /* back — rebuilt in HTML so text and logos stay razor-sharp */
   .back {
     transform: rotateY(180deg);
-    background: var(--c-black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 0.85rem 0.75rem;
+    background: radial-gradient(120% 90% at 50% 0%, #17181b 0%, #0a0a0b 70%);
+    color: var(--c-white);
   }
-  .back-art {
+  .back-logo {
+    flex: none;
+    height: clamp(20px, 5vw, 26px);
+    width: auto;
+  }
+  .back-desc {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    font-size: clamp(0.625rem, 0.55rem + 0.35vw, 0.75rem);
+    line-height: 1.42;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    text-wrap: pretty;
+  }
+  .back-desc::-webkit-scrollbar {
+    width: 3px;
+  }
+  .back-desc::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+  }
+  .back-benefits {
+    flex: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: center;
+    justify-items: center;
+    gap: 0.4rem 0.3rem;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    list-style: none;
+    margin: 0;
+    padding: 0.35rem 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .back-benefits li {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .back-benefits :global(img) {
+    height: clamp(26px, 6.5vw, 34px);
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
   }
 </style>
 

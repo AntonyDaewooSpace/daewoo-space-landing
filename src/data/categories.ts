@@ -8,13 +8,20 @@ import microondas from '../assets/cards/microondas.png';
 import pilas from '../assets/cards/pilas.png';
 import aire from '../assets/cards/aire.png';
 
-import backTv from '../assets/cards/back/tv.png';
-import backLavadora from '../assets/cards/back/lavadora.png';
-import backRefrigeradora from '../assets/cards/back/refrigeradora.png';
-import backCocina from '../assets/cards/back/cocina.png';
-import backMicroondas from '../assets/cards/back/microondas.png';
-import backPilas from '../assets/cards/back/pilas.png';
-import backAire from '../assets/cards/back/aire.png';
+// Back-face assets, per category: <cat>/logo.png + <cat>/<n>-*.png benefit lockups
+const backAssets = import.meta.glob<ImageMetadata>('../assets/cards/back/*/*.png', {
+  eager: true,
+  import: 'default',
+});
+
+const backLogo = (cat: string): ImageMetadata =>
+  backAssets[`../assets/cards/back/${cat}/logo.png`];
+
+const backBenefits = (cat: string): ImageMetadata[] =>
+  Object.entries(backAssets)
+    .filter(([p]) => p.includes(`/back/${cat}/`) && /\/\d+-/.test(p))
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([, m]) => m);
 
 import iconTv from '../assets/icons/tv.svg?raw';
 import iconLavadora from '../assets/icons/lavadora.svg?raw';
@@ -33,8 +40,9 @@ export interface Category {
   /** front face */
   frontTitle: string;
   frontText: string;
-  /** back face — full composed artwork + a text summary for screen readers */
-  backImage: ImageMetadata;
+  /** back face — rebuilt in HTML for full sharpness */
+  backLogo: ImageMetadata;
+  backBenefits: ImageMetadata[];
   backTitle: string;
   backText: string;
 }
@@ -46,7 +54,8 @@ export const categories: Category[] = [
     name: 'Televisores',
     accent: 'var(--acc-tv)',
     image: tv,
-    backImage: backTv,
+    backLogo: backLogo('tv'),
+    backBenefits: backBenefits('tv'),
     icon: iconTv,
     frontTitle: 'El entretenimiento cobra una nueva dimensión.',
     frontText:
@@ -60,7 +69,8 @@ export const categories: Category[] = [
     name: 'Lavadoras',
     accent: 'var(--acc-lavadora)',
     image: lavadora,
-    backImage: backLavadora,
+    backLogo: backLogo('lavadora'),
+    backBenefits: backBenefits('lavadora'),
     icon: iconLavadora,
     frontTitle: 'El arte de cuidar tu ropa sin esfuerzo',
     frontText:
@@ -74,7 +84,8 @@ export const categories: Category[] = [
     name: 'Refrigeradoras',
     accent: 'var(--acc-refrigeradora)',
     image: refrigeradora,
-    backImage: backRefrigeradora,
+    backLogo: backLogo('refrigeradora'),
+    backBenefits: backBenefits('refrigeradora'),
     icon: iconRefrigeradora,
     frontTitle: 'La frescura que evoluciona contigo.',
     frontText:
@@ -88,7 +99,8 @@ export const categories: Category[] = [
     name: 'Cocinas',
     accent: 'var(--acc-cocina)',
     image: cocina,
-    backImage: backCocina,
+    backLogo: backLogo('cocina'),
+    backBenefits: backBenefits('cocina'),
     icon: iconCocina,
     frontTitle: 'Innovación que inspira cada creación.',
     frontText:
@@ -102,7 +114,8 @@ export const categories: Category[] = [
     name: 'Microondas',
     accent: 'var(--acc-microondas)',
     image: microondas,
-    backImage: backMicroondas,
+    backLogo: backLogo('microondas'),
+    backBenefits: backBenefits('microondas'),
     icon: iconMicroondas,
     frontTitle: 'Rapidez que simplifica tu día.',
     frontText:
@@ -116,7 +129,8 @@ export const categories: Category[] = [
     name: 'Pilas',
     accent: 'var(--acc-pilas)',
     image: pilas,
-    backImage: backPilas,
+    backLogo: backLogo('pilas'),
+    backBenefits: backBenefits('pilas'),
     icon: iconPilas,
     frontTitle: 'La energía que impulsa cada momento.',
     frontText:
@@ -130,7 +144,8 @@ export const categories: Category[] = [
     name: 'Aire acondicionado',
     accent: 'var(--acc-aire)',
     image: aire,
-    backImage: backAire,
+    backLogo: backLogo('aire'),
+    backBenefits: backBenefits('aire'),
     icon: iconAire,
     frontTitle: 'El confort inteligente en cada ambiente',
     frontText:
