@@ -35,9 +35,15 @@ const { category, clone = false } = Astro.props;
     </div>
 
     <div class="face back">
-      <span class="tag">{category.name}</span>
-      <h4>{category.backTitle}</h4>
-      <p>{category.backText}</p>
+      <Image
+        class="back-art"
+        src={category.backImage}
+        alt={clone ? '' : `${category.name}: ${category.backTitle}`}
+        widths={[345, 520, 720]}
+        sizes="(max-width: 640px) 80vw, 345px"
+        loading="lazy"
+      />
+      {!clone && <p class="visually-hidden">{category.backText}</p>}
     </div>
   </div>
 </article>
@@ -45,8 +51,8 @@ const { category, clone = false } = Astro.props;
 <style>
   .card {
     flex: 0 0 auto;
-    width: min(80vw, 345px);
-    aspect-ratio: 345 / 292;
+    width: min(80vw, 350px);
+    aspect-ratio: 360 / 283;
     perspective: 1200px;
     cursor: pointer;
     border-radius: var(--radius-card);
@@ -130,42 +136,15 @@ const { category, clone = false } = Astro.props;
     color: rgba(255, 255, 255, 0.82);
   }
 
-  /* back */
+  /* back — full composed artwork */
   .back {
     transform: rotateY(180deg);
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-    padding: 1.1rem 1.15rem 1.15rem;
     background: var(--c-black);
-    color: var(--c-white);
-    border-top: 3px solid var(--accent);
   }
-  .tag {
-    align-self: flex-start;
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-  .back h4 {
-    font-size: 0.9375rem;
-    line-height: 1.25;
-  }
-  .back p {
-    font-size: 0.75rem;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.85);
-    overflow-y: auto;
-    padding-right: 0.15rem;
-  }
-  .back p::-webkit-scrollbar {
-    width: 3px;
-  }
-  .back p::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: 3px;
+  .back-art {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 </style>
 

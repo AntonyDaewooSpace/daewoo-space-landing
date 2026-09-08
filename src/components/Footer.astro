@@ -60,6 +60,10 @@ const icons: Record<string, string> = {
     overflow: hidden;
     background-color: #0d0d0d;
   }
+  /* footer content (and the divider lines) run wider than the page container */
+  .footer :global(.container) {
+    max-width: min(1640px, 94vw);
+  }
   .footer::after {
     /* keep the copy legible on the left */
     content: '';
@@ -72,30 +76,30 @@ const icons: Record<string, string> = {
 
   .top {
     position: relative;
-    min-height: 380px;
-    padding-bottom: clamp(1.5rem, 4vw, 2.5rem);
+    min-height: 340px;
+    padding-bottom: clamp(1.25rem, 3vw, 2rem);
   }
-  /* appliance render: its BOTTOM edge sits on the divider line */
+  /* appliance render: its BOTTOM edge (reflection) sits right on the divider line */
   .footer-art {
     position: absolute;
     right: 0;
     bottom: 0;
     z-index: -2;
-    width: min(50%, 520px);
+    width: min(48%, 520px);
     height: auto;
     pointer-events: none;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 24%);
-    mask-image: linear-gradient(90deg, transparent, #000 24%);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%);
+    mask-image: linear-gradient(90deg, transparent, #000 22%);
   }
 
   @media (max-width: 720px) {
     .top {
       min-height: 0;
-      padding-bottom: 12rem;
+      padding-bottom: 9rem;
     }
     .footer-art {
-      width: 80%;
-      opacity: 0.5;
+      width: 82%;
+      opacity: 0.55;
     }
   }
   .brand-logo {
