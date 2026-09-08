@@ -4,7 +4,7 @@ import type { Category } from '../data/categories';
 
 interface Props {
   category: Category;
-  /** duplicated slides used only to fill the infinite loop */
+  /** duplicated slides that fill the infinite loop (not exposed to a11y) */
   clone?: boolean;
 }
 const { category, clone = false } = Astro.props;
@@ -34,17 +34,15 @@ const { category, clone = false } = Astro.props;
       </div>
     </div>
 
-    {!clone && (
-      <div class="face back">
-        <Image class="back-logo" src={category.backLogo} alt={category.backTitle} height={26} densities={[1, 2]} loading="lazy" />
-        <p class="back-desc">{category.backText}</p>
-        <ul class="back-benefits" aria-hidden="true">
-          {category.backBenefits.map((b) => (
-            <li><Image src={b} alt="" height={34} densities={[1, 2]} loading="lazy" /></li>
-          ))}
-        </ul>
-      </div>
-    )}
+    <div class="face back">
+      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={22} densities={[1, 2]} loading="lazy" />
+      <p class="back-desc">{category.backText}</p>
+      <ul class="back-benefits" aria-hidden="true">
+        {category.backBenefits.map((b) => (
+          <li><Image src={b} alt="" height={22} densities={[1, 2]} loading="lazy" /></li>
+        ))}
+      </ul>
+    </div>
   </div>
 </article>
 
@@ -56,6 +54,9 @@ const { category, clone = false } = Astro.props;
     perspective: 1200px;
     cursor: pointer;
     border-radius: var(--radius-card);
+    /* skip layout/paint for cards scrolled out of the carousel viewport */
+    content-visibility: auto;
+    contain-intrinsic-size: 350px 275px;
   }
   .card:focus-visible {
     outline: 2px solid var(--c-blue-100);
@@ -72,9 +73,8 @@ const { category, clone = false } = Astro.props;
   .card.is-flipped .inner {
     transform: rotateY(180deg);
   }
-  /* laptop / mouse: flip on hover (clones have no back face, never flip) */
   @media (hover: hover) and (pointer: fine) {
-    .card:not([aria-hidden]):not(.is-flipped):hover .inner {
+    .card:not(.is-flipped):hover .inner {
       transform: rotateY(180deg);
     }
   }
@@ -136,61 +136,55 @@ const { category, clone = false } = Astro.props;
     color: rgba(255, 255, 255, 0.82);
   }
 
-  /* back — rebuilt in HTML so text and logos stay razor-sharp */
+  /* back — rebuilt in HTML at the same proportions as the Figma art, but sharp */
   .back {
     transform: rotateY(180deg);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.85rem 0.85rem 0.75rem;
-    background: radial-gradient(120% 90% at 50% 0%, #17181b 0%, #0a0a0b 70%);
-    color: var(--c-white);
+    justify-content: center;
+    gap: clamp(0.55rem, 2.5vw, 0.85rem);
+    padding: 0.9rem 1rem;
+    background: radial-gradient(130% 85% at 50% -5%, #1d1e22 0%, #0b0b0c 72%);
+    color: #fff;
+    text-align: center;
   }
   .back-logo {
     flex: none;
-    height: clamp(20px, 5vw, 26px);
+    height: clamp(16px, 4.5vw, 21px);
     width: auto;
   }
   .back-desc {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-height: 0;
     overflow-y: auto;
-    font-size: clamp(0.625rem, 0.55rem + 0.35vw, 0.75rem);
-    line-height: 1.42;
-    text-align: center;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(0.5rem, 0.42rem + 0.35vw, 0.625rem);
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.94);
     text-wrap: pretty;
   }
   .back-desc::-webkit-scrollbar {
-    width: 3px;
+    width: 2px;
   }
   .back-desc::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.22);
   }
   .back-benefits {
     flex: none;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, auto);
     align-items: center;
-    justify-items: center;
-    gap: 0.4rem 0.3rem;
-    width: 100%;
+    justify-content: center;
+    column-gap: clamp(0.5rem, 3vw, 1.1rem);
+    row-gap: 0.5rem;
     list-style: none;
     margin: 0;
-    padding: 0.35rem 0 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-  }
-  .back-benefits li {
-    display: flex;
-    justify-content: center;
-    width: 100%;
+    padding: clamp(0.5rem, 2.5vw, 0.8rem) 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
   }
   .back-benefits :global(img) {
-    height: clamp(26px, 6.5vw, 34px);
+    height: clamp(17px, 4.5vw, 22px);
     width: auto;
-    max-width: 100%;
     object-fit: contain;
   }
 </style>
@@ -198,17 +192,15 @@ const { category, clone = false } = Astro.props;
 <script>
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-  document.querySelectorAll<HTMLElement>('.card:not([aria-hidden])').forEach((card) => {
+  document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
+    const real = !card.hasAttribute('aria-hidden');
     const toggle = (state?: boolean) => {
-      const next = state ?? !card.classList.contains('is-flipped');
-      card.classList.toggle('is-flipped', next);
+      card.classList.toggle('is-flipped', state ?? !card.classList.contains('is-flipped'));
     };
 
     if (canHover) {
-      // desktop: hover handles it; clear any lingering flip on leave
       card.addEventListener('mouseleave', () => toggle(false));
     } else {
-      // touch: tap anywhere flips — but ignore taps that were really a swipe
       let x = 0,
         y = 0,
         drag = false;
@@ -229,12 +221,13 @@ const { category, clone = false } = Astro.props;
       });
     }
 
-    // keyboard
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggle();
-      }
-    });
+    if (real) {
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
+      });
+    }
   });
 </script>

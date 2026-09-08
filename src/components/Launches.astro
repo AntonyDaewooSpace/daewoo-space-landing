@@ -59,27 +59,40 @@ const loop = [...categories, ...categories];
     };
     const setWidth = () => stride() * real;
 
-    // keep the scroll position inside the first copy of the set
+    // keep the scroll position inside the first copy of the set (clones are only a
+    // buffer). Skipped while a smooth programmatic scroll is running so it can't jump.
+    let animating = 0;
     const normalize = () => {
       const w = setWidth();
       if (track.scrollLeft >= w * 1.999) track.scrollLeft -= w;
       else if (track.scrollLeft < 0) track.scrollLeft += w;
+      else if (!animating && Date.now() - lastUserScroll > 400 && track.scrollLeft >= w) {
+        track.scrollLeft -= w;
+      }
     };
+    let lastUserScroll = 0;
 
     const syncDots = () => {
       const idx = Math.round(track.scrollLeft / stride()) % real;
       dots.forEach((d, i) => d.setAttribute('aria-selected', String(i === ((idx % real) + real) % real)));
     };
 
+    const markAnimating = () => {
+      animating++;
+      window.setTimeout(() => (animating = Math.max(0, animating - 1)), 650);
+    };
+
     const step = (dir: number) => {
       // wrap first (while at rest) so the smooth animation never crosses the seam
       if (dir > 0 && track.scrollLeft >= setWidth() - 1) track.scrollLeft -= setWidth();
       if (dir < 0 && track.scrollLeft <= 1) track.scrollLeft += setWidth();
+      markAnimating();
       track.scrollBy({ left: dir * stride(), behavior: 'smooth' });
     };
 
     const goToDot = (i: number) => {
       const base = Math.round(track.scrollLeft / setWidth()) * setWidth();
+      markAnimating();
       track.scrollTo({ left: base + stride() * i, behavior: 'smooth' });
     };
 
@@ -104,7 +117,9 @@ const loop = [...categories, ...categories];
     track.addEventListener('pointerenter', () => { hovering = true; });
     track.addEventListener('pointerleave', () => { hovering = false; });
     track.addEventListener('scroll', () => { normalize(); syncDots(); }, { passive: true });
-    track.addEventListener('touchstart', () => { hovering = true; }, { passive: true });
+    track.addEventListener('wheel', () => { lastUserScroll = Date.now(); }, { passive: true });
+    track.addEventListener('touchstart', () => { hovering = true; lastUserScroll = Date.now(); }, { passive: true });
+    track.addEventListener('touchmove', () => { lastUserScroll = Date.now(); }, { passive: true });
     track.addEventListener('touchend', () => { hovering = false; bumpPlay(); });
 
     // start aligned to the first card, then run
