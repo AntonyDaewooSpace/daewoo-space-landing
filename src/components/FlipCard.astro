@@ -35,7 +35,7 @@ const { category, clone = false } = Astro.props;
     </div>
 
     <div class="face back">
-      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={28} densities={[1, 2]} loading="lazy" decoding="async" />
+      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={34} densities={[1, 2]} format="png" loading="lazy" decoding="async" />
       <div class="back-desc"><p>{category.backText}</p></div>
       <ul class="back-benefits" aria-hidden="true">
         {category.backBenefits.map((b) => (
@@ -169,8 +169,9 @@ const { category, clone = false } = Astro.props;
     text-align: center;
   }
   .back-logo {
-    height: clamp(21px, 5.5vw, 28px);
+    height: clamp(23px, 6vw, 28px);
     width: auto;
+    max-width: 75%; /* only reins in the very widest wordmark */
   }
   .back-desc {
     align-self: stretch;
