@@ -194,32 +194,57 @@ const { category, clone = false } = Astro.props;
 </style>
 
 <script>
-  const hoverPointer = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
+  // Once any touch happens we treat this as a touch device, even if it also reports
+  // (hover: hover) — some Android browsers and 2-in-1s do.
+  let touchUsed = false;
+  addEventListener('touchstart', () => (touchUsed = true), { once: true, passive: true, capture: true });
+  const mouseOnly = () => !touchUsed && matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
     const real = !card.hasAttribute('aria-hidden');
-    const toggle = (state?: boolean) =>
-      card.classList.toggle('is-flipped', state ?? !card.classList.contains('is-flipped'));
+    let flippedAt = 0;
+    const flip = () => {
+      card.classList.toggle('is-flipped');
+      flippedAt = Date.now();
+    };
 
-    // remember what kind of pointer started the interaction
-    let pointer: string = 'mouse';
-    card.addEventListener('pointerdown', (e) => (pointer = e.pointerType), { passive: true });
+    // mouse on a hover device: CSS :hover drives the flip; reset when the pointer leaves
+    card.addEventListener('mouseleave', () => card.classList.remove('is-flipped'));
 
-    // mouse on a hover device: CSS :hover drives the flip, reset when the pointer leaves
-    card.addEventListener('mouseleave', () => toggle(false));
+    // --- touch: tap flips, swipe doesn't ---
+    let tx = 0,
+      ty = 0;
+    card.addEventListener(
+      'touchstart',
+      (e) => {
+        tx = e.touches[0].clientX;
+        ty = e.touches[0].clientY;
+      },
+      { passive: true },
+    );
+    card.addEventListener(
+      'touchend',
+      (e) => {
+        const t = e.changedTouches[0];
+        if (Math.hypot(t.clientX - tx, t.clientY - ty) > 14) return; // was a swipe
+        e.preventDefault(); // stop the browser synthesising a click
+        flip();
+      },
+      { passive: false },
+    );
 
-    // tap: `click` only fires for genuine taps (the browser suppresses it after a
-    // scroll/swipe), so no manual drag guard is needed.
+    // --- click: mouse-less activation (keyboard AT, screen readers) + fallback ---
     card.addEventListener('click', () => {
-      if (pointer === 'mouse' && hoverPointer()) return; // desktop uses hover
-      toggle();
+      if (mouseOnly()) return; // desktop mouse → hover already handled it
+      if (Date.now() - flippedAt < 500) return; // touchend already handled it
+      flip();
     });
 
     if (real) {
       card.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          toggle();
+          flip();
         }
       });
     }
