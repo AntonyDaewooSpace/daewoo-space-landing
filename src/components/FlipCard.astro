@@ -35,11 +35,11 @@ const { category, clone = false } = Astro.props;
     </div>
 
     <div class="face back">
-      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={22} densities={[1, 2]} loading="lazy" />
+      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={22} densities={[1, 2]} loading="lazy" decoding="async" />
       <p class="back-desc">{category.backText}</p>
       <ul class="back-benefits" aria-hidden="true">
         {category.backBenefits.map((b) => (
-          <li><Image src={b} alt="" height={22} densities={[1, 2]} loading="lazy" /></li>
+          <li><Image src={b} alt="" height={22} densities={[1, 2]} loading="lazy" decoding="async" /></li>
         ))}
       </ul>
     </div>
@@ -49,14 +49,11 @@ const { category, clone = false } = Astro.props;
 <style>
   .card {
     flex: 0 0 auto;
-    width: min(80vw, 350px);
-    aspect-ratio: 360 / 283;
+    width: min(82vw, 350px);
+    aspect-ratio: 340 / 290;
     perspective: 1200px;
     cursor: pointer;
     border-radius: var(--radius-card);
-    /* skip layout/paint for cards scrolled out of the carousel viewport */
-    content-visibility: auto;
-    contain-intrinsic-size: 350px 275px;
   }
   .card:focus-visible {
     outline: 2px solid var(--c-blue-100);
@@ -136,15 +133,15 @@ const { category, clone = false } = Astro.props;
     color: rgba(255, 255, 255, 0.82);
   }
 
-  /* back — rebuilt in HTML at the same proportions as the Figma art, but sharp */
+  /* back — rebuilt in HTML at the proportions of the Figma art, but sharp */
   .back {
     transform: rotateY(180deg);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: clamp(0.55rem, 2.5vw, 0.85rem);
-    padding: 0.9rem 1rem;
+    gap: clamp(0.5rem, 2vw, 0.8rem);
+    padding: clamp(0.75rem, 3.5vw, 1rem);
     background: radial-gradient(130% 85% at 50% -5%, #1d1e22 0%, #0b0b0c 72%);
     color: #fff;
     text-align: center;
@@ -171,55 +168,52 @@ const { category, clone = false } = Astro.props;
   }
   .back-benefits {
     flex: none;
+    width: 100%;
     display: grid;
-    grid-template-columns: repeat(3, auto);
+    grid-template-columns: repeat(3, 1fr);
     align-items: center;
-    justify-content: center;
-    column-gap: clamp(0.5rem, 3vw, 1.1rem);
-    row-gap: 0.5rem;
+    column-gap: clamp(0.3rem, 2vw, 0.7rem);
+    row-gap: clamp(0.35rem, 1.5vw, 0.5rem);
     list-style: none;
     margin: 0;
-    padding: clamp(0.5rem, 2.5vw, 0.8rem) 0 0;
+    padding: clamp(0.45rem, 2vw, 0.75rem) 0 0;
     border-top: 1px solid rgba(255, 255, 255, 0.16);
   }
+  .back-benefits li {
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+  }
   .back-benefits :global(img) {
-    height: clamp(17px, 4.5vw, 22px);
+    max-width: 100%;
+    max-height: clamp(19px, 5vw, 24px);
     width: auto;
+    height: auto;
     object-fit: contain;
   }
 </style>
 
 <script>
-  const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const hoverPointer = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   document.querySelectorAll<HTMLElement>('.card').forEach((card) => {
     const real = !card.hasAttribute('aria-hidden');
-    const toggle = (state?: boolean) => {
+    const toggle = (state?: boolean) =>
       card.classList.toggle('is-flipped', state ?? !card.classList.contains('is-flipped'));
-    };
 
-    if (canHover) {
-      card.addEventListener('mouseleave', () => toggle(false));
-    } else {
-      let x = 0,
-        y = 0,
-        drag = false;
-      card.addEventListener('pointerdown', (e) => {
-        x = e.clientX;
-        y = e.clientY;
-        drag = false;
-      });
-      card.addEventListener(
-        'pointermove',
-        (e) => {
-          if (Math.abs(e.clientX - x) > 12 || Math.abs(e.clientY - y) > 12) drag = true;
-        },
-        { passive: true },
-      );
-      card.addEventListener('pointerup', () => {
-        if (!drag) toggle();
-      });
-    }
+    // remember what kind of pointer started the interaction
+    let pointer: string = 'mouse';
+    card.addEventListener('pointerdown', (e) => (pointer = e.pointerType), { passive: true });
+
+    // mouse on a hover device: CSS :hover drives the flip, reset when the pointer leaves
+    card.addEventListener('mouseleave', () => toggle(false));
+
+    // tap: `click` only fires for genuine taps (the browser suppresses it after a
+    // scroll/swipe), so no manual drag guard is needed.
+    card.addEventListener('click', () => {
+      if (pointer === 'mouse' && hoverPointer()) return; // desktop uses hover
+      toggle();
+    });
 
     if (real) {
       card.addEventListener('keydown', (e) => {
