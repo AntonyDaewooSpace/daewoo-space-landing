@@ -35,11 +35,11 @@ const { category, clone = false } = Astro.props;
     </div>
 
     <div class="face back">
-      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={22} densities={[1, 2]} loading="lazy" decoding="async" />
-      <p class="back-desc">{category.backText}</p>
+      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={28} densities={[1, 2]} loading="lazy" decoding="async" />
+      <div class="back-desc"><p>{category.backText}</p></div>
       <ul class="back-benefits" aria-hidden="true">
         {category.backBenefits.map((b) => (
-          <li><Image src={b} alt="" height={22} densities={[1, 2]} loading="lazy" decoding="async" /></li>
+          <li><Image src={b} alt="" height={24} densities={[1, 2]} loading="lazy" decoding="async" /></li>
         ))}
       </ul>
     </div>
@@ -50,10 +50,15 @@ const { category, clone = false } = Astro.props;
   .card {
     flex: 0 0 auto;
     width: min(82vw, 350px);
-    aspect-ratio: 340 / 290;
+    aspect-ratio: 340 / 278;
     perspective: 1200px;
     cursor: pointer;
     border-radius: var(--radius-card);
+  }
+  @media (max-width: 640px) {
+    .card {
+      aspect-ratio: 320 / 272;
+    }
   }
   .card:focus-visible {
     outline: 2px solid var(--c-blue-100);
@@ -83,6 +88,23 @@ const { category, clone = false } = Astro.props;
     border-radius: var(--radius-card);
     overflow: hidden;
     box-shadow: var(--shadow-card);
+    /* fallback for browsers where backface-visibility is unreliable: hide the
+       away-facing side, switched at the mid-point of the flip */
+    transition: visibility 0s linear 0.28s;
+  }
+  .card:not(.is-flipped) .back {
+    visibility: hidden;
+  }
+  .card.is-flipped .front {
+    visibility: hidden;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card:not(.is-flipped):hover .front {
+      visibility: hidden;
+    }
+    .card:not(.is-flipped):hover .back {
+      visibility: visible;
+    }
   }
 
   /* front */
@@ -136,25 +158,27 @@ const { category, clone = false } = Astro.props;
   /* back — rebuilt in HTML at the proportions of the Figma art, but sharp */
   .back {
     transform: rotateY(180deg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(0.5rem, 2vw, 0.8rem);
-    padding: clamp(0.75rem, 3.5vw, 1rem);
+    display: grid;
+    grid-template-rows: repeat(3, auto);
+    align-content: safe center;
+    justify-items: center;
+    gap: clamp(0.55rem, 2.4vw, 0.9rem);
+    padding: clamp(0.7rem, 3.5vw, 1rem);
     background: radial-gradient(130% 85% at 50% -5%, #1d1e22 0%, #0b0b0c 72%);
     color: #fff;
     text-align: center;
   }
   .back-logo {
-    flex: none;
-    height: clamp(16px, 4.5vw, 21px);
+    height: clamp(21px, 5.5vw, 28px);
     width: auto;
   }
   .back-desc {
-    flex: 0 1 auto;
-    min-height: 0;
+    align-self: stretch;
+    max-height: 12em;
     overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .back-desc p {
     font-size: clamp(0.5rem, 0.42rem + 0.35vw, 0.625rem);
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.94);
@@ -167,26 +191,24 @@ const { category, clone = false } = Astro.props;
     background: rgba(255, 255, 255, 0.22);
   }
   .back-benefits {
-    flex: none;
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    column-gap: clamp(0.3rem, 2vw, 0.7rem);
-    row-gap: clamp(0.35rem, 1.5vw, 0.5rem);
+    justify-content: center;
+    gap: clamp(0.4rem, 1.8vw, 0.65rem) clamp(0.55rem, 3.5vw, 1.15rem);
+    width: 100%;
     list-style: none;
     margin: 0;
-    padding: clamp(0.45rem, 2vw, 0.75rem) 0 0;
+    padding: clamp(0.45rem, 2vw, 0.7rem) 0 0;
     border-top: 1px solid rgba(255, 255, 255, 0.16);
   }
   .back-benefits li {
-    display: flex;
-    justify-content: center;
-    min-width: 0;
+    flex: 0 0 auto;
+    max-width: 46%;
   }
   .back-benefits :global(img) {
     max-width: 100%;
-    max-height: clamp(19px, 5vw, 24px);
+    max-height: clamp(20px, 5.5vw, 26px);
     width: auto;
     height: auto;
     object-fit: contain;
