@@ -34,15 +34,17 @@ const { category, clone = false } = Astro.props;
       </div>
     </div>
 
-    <div class="face back">
-      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={26} densities={[1, 2, 3]} loading="lazy" />
-      <p class="back-desc">{category.backText}</p>
-      <ul class="back-benefits" aria-hidden="true">
-        {category.backBenefits.map((b) => (
-          <li><Image src={b} alt="" height={34} densities={[1, 2, 3]} loading="lazy" /></li>
-        ))}
-      </ul>
-    </div>
+    {!clone && (
+      <div class="face back">
+        <Image class="back-logo" src={category.backLogo} alt={category.backTitle} height={26} densities={[1, 2]} loading="lazy" />
+        <p class="back-desc">{category.backText}</p>
+        <ul class="back-benefits" aria-hidden="true">
+          {category.backBenefits.map((b) => (
+            <li><Image src={b} alt="" height={34} densities={[1, 2]} loading="lazy" /></li>
+          ))}
+        </ul>
+      </div>
+    )}
   </div>
 </article>
 
@@ -70,9 +72,9 @@ const { category, clone = false } = Astro.props;
   .card.is-flipped .inner {
     transform: rotateY(180deg);
   }
-  /* laptop / mouse: flip on hover */
+  /* laptop / mouse: flip on hover (clones have no back face, never flip) */
   @media (hover: hover) and (pointer: fine) {
-    .card:not(.is-flipped):hover .inner {
+    .card:not([aria-hidden]):not(.is-flipped):hover .inner {
       transform: rotateY(180deg);
     }
   }
