@@ -26,12 +26,16 @@ import badge from '../assets/logos/50-anos-horizontal.png';
   .inner {
     display: flex;
     align-items: center;
-    gap: clamp(2rem, 5vw, 3.75rem);
+    justify-content: center;
+    gap: clamp(1.75rem, 4.5vw, 3.25rem);
   }
   .badge {
     flex: none;
     width: clamp(115px, 13vw, 175px);
     height: auto;
+  }
+  .copy {
+    max-width: 34rem;
   }
   .copy h2 {
     font-size: var(--fs-h2);
@@ -41,7 +45,6 @@ import badge from '../assets/logos/50-anos-horizontal.png';
     font-size: clamp(0.9375rem, 0.88rem + 0.35vw, 1.125rem);
     line-height: 1.55;
     color: var(--c-grey-light);
-    max-width: 64ch;
   }
 
   @media (max-width: 640px) {
