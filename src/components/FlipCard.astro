@@ -12,6 +12,7 @@ const { category, clone = false } = Astro.props;
 
 <article
   class="card"
+  data-cat={category.id}
   style={`--accent:${category.accent}`}
   aria-hidden={clone ? 'true' : undefined}
   tabindex={clone ? undefined : '0'}
@@ -35,7 +36,7 @@ const { category, clone = false } = Astro.props;
     </div>
 
     <div class="face back">
-      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={34} densities={[1, 2]} format="png" loading="lazy" decoding="async" />
+      <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={46} densities={[1, 2]} format="png" loading="lazy" decoding="async" />
       <div class="back-desc"><p>{category.backText}</p></div>
       <ul class="back-benefits" aria-hidden="true">
         {category.backBenefits.map((b) => (
@@ -168,11 +169,22 @@ const { category, clone = false } = Astro.props;
     color: #fff;
     text-align: center;
   }
+  /* Logos vary in construction (1-line wordmark vs 2-line stacked). Per-category
+     heights so the visible text reads at a consistent size across all cards. */
   .back-logo {
-    height: clamp(23px, 6vw, 28px);
+    --logo-h: 1;
+    height: calc(clamp(22px, 5.6vw, 26px) * var(--logo-h));
     width: auto;
-    max-width: 75%; /* only reins in the very widest wordmark */
+    max-width: 78%;
+    object-fit: contain;
   }
+  [data-cat='tv'] .back-logo { --logo-h: 0.92; }
+  [data-cat='aire'] .back-logo { --logo-h: 1; }
+  [data-cat='cocina'] .back-logo,
+  [data-cat='microondas'] .back-logo { --logo-h: 1.05; }
+  [data-cat='lavadora'] .back-logo { --logo-h: 1.4; }
+  [data-cat='pilas'] .back-logo { --logo-h: 1.5; }
+  [data-cat='refrigeradora'] .back-logo { --logo-h: 1.6; }
   .back-desc {
     align-self: stretch;
     max-height: 9.5rem;
