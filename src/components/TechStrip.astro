@@ -80,7 +80,12 @@ const logos = [
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* contain (not cover): the section's height is content-driven and doesn't
+       always match the image's native 1280:240 ratio — cover would crop the
+       sides whenever the section is proportionally taller than that. contain
+       guarantees the full image is always visible, letterboxed into the
+       section's own black background when the ratios don't match. */
+    object-fit: contain;
     object-position: center;
     z-index: -1;
   }

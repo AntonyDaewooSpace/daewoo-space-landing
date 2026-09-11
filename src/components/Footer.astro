@@ -3,11 +3,11 @@ import { getImage } from 'astro:assets';
 import { Image } from 'astro:assets';
 import daewooSpace from '../assets/logos/daewoo-space.png';
 import badge from '../assets/logos/50-years-daewoo.png';
-import artMobile from '../assets/footer-art.png';
+import artMobile from '../assets/footer-art-mobile.png';
 import artDesktop from '../assets/footer-art-wide.png';
 import { social, legal } from '../data/site';
 
-const artMobileOpt = await getImage({ src: artMobile, width: 640, format: 'png' });
+const artMobileOpt = await getImage({ src: artMobile, width: 900, format: 'png' });
 const artDesktopOpt = await getImage({ src: artDesktop, width: 1920, format: 'png' });
 import { withBase } from '../lib/url';
 
@@ -25,7 +25,7 @@ const icons: Record<string, string> = {
   <div class="container">
     <div class="top" data-reveal>
       <picture class="footer-art">
-        <source media="(min-width: 721px)" srcset={artDesktopOpt.src} />
+        <source media="(min-width: 561px)" srcset={artDesktopOpt.src} />
         <img src={artMobileOpt.src} alt="" aria-hidden="true" />
       </picture>
       <Image class="brand-logo" src={daewooSpace} alt="Daewoo Space" width={194} height={30} />
@@ -84,46 +84,48 @@ const icons: Record<string, string> = {
 
   .top {
     position: relative;
-    min-height: clamp(230px, 21vw, 460px);
     padding-bottom: clamp(1.25rem, 3vw, 2rem);
   }
-  /* appliance render: its BOTTOM edge (reflection) sits right on the divider line.
-     Desktop uses a full-width band (art-directed crop) so it spans the whole
-     footer; mobile keeps a tighter, smaller crop anchored to the right. */
+  /* >=900px: the blurb's badge sits well clear of where the artwork's visible
+     content starts, so the image can share the row with the text — only its
+     own height needs reserving. */
+  @media (min-width: 900px) {
+    .top {
+      min-height: clamp(230px, 21vw, 460px);
+    }
+  }
+  /* <900px: .blurb's badge can land under/inside the artwork's visible span,
+     so its height must be reserved as real padding (additive), pushing the
+     text up clear of the image instead of just capping a min-height the
+     content could still exceed. Two tiers because the mobile art crop (less
+     dead space, so it reads at a legible size) is proportionally taller than
+     the desktop crop used from 561px up. */
+  @media (max-width: 899px) {
+    .top {
+      padding-bottom: clamp(115px, 21vw, 190px);
+    }
+  }
+  @media (max-width: 560px) {
+    .top {
+      padding-bottom: clamp(115px, 36vw, 205px);
+    }
+  }
+  /* appliance render: its BOTTOM edge (reflection) sits right on the divider
+     line, full-bleed edge to edge at every breakpoint (art-directed crop —
+     mobile keeps proportionally less dead space so the appliances read at a
+     legible size; desktop uses the full source width). */
   .footer-art {
     position: absolute;
+    left: 0;
     right: 0;
     bottom: 0;
     z-index: -2;
-    width: 82%;
     pointer-events: none;
   }
   .footer-art img {
     display: block;
     width: 100%;
     height: auto;
-    opacity: 0.55;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%);
-    mask-image: linear-gradient(90deg, transparent, #000 22%);
-  }
-
-  @media (min-width: 721px) {
-    .footer-art {
-      left: 0;
-      width: auto;
-    }
-    .footer-art img {
-      opacity: 1;
-      -webkit-mask-image: none;
-      mask-image: none;
-    }
-  }
-
-  @media (max-width: 720px) {
-    .top {
-      min-height: 0;
-      padding-bottom: 9rem;
-    }
   }
   .brand-logo {
     height: 30px;
