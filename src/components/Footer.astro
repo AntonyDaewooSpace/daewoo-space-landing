@@ -1,9 +1,14 @@
 ---
+import { getImage } from 'astro:assets';
 import { Image } from 'astro:assets';
 import daewooSpace from '../assets/logos/daewoo-space.png';
 import badge from '../assets/logos/50-years-daewoo.png';
-import art from '../assets/footer-art.png';
+import artMobile from '../assets/footer-art.png';
+import artDesktop from '../assets/footer-art-wide.png';
 import { social, legal } from '../data/site';
+
+const artMobileOpt = await getImage({ src: artMobile, width: 640, format: 'png' });
+const artDesktopOpt = await getImage({ src: artDesktop, width: 1920, format: 'png' });
 import { withBase } from '../lib/url';
 
 const icons: Record<string, string> = {
@@ -19,7 +24,10 @@ const icons: Record<string, string> = {
 <footer class="footer">
   <div class="container">
     <div class="top" data-reveal>
-      <Image class="footer-art" src={art} alt="" aria-hidden="true" widths={[420, 640, 813]} sizes="52vw" />
+      <picture class="footer-art">
+        <source media="(min-width: 721px)" srcset={artDesktopOpt.src} />
+        <img src={artMobileOpt.src} alt="" aria-hidden="true" />
+      </picture>
       <Image class="brand-logo" src={daewooSpace} alt="Daewoo Space" width={194} height={30} />
       <div class="blurb">
         <p>
@@ -76,30 +84,45 @@ const icons: Record<string, string> = {
 
   .top {
     position: relative;
-    min-height: 340px;
+    min-height: clamp(230px, 21vw, 460px);
     padding-bottom: clamp(1.25rem, 3vw, 2rem);
   }
-  /* appliance render: its BOTTOM edge (reflection) sits right on the divider line */
+  /* appliance render: its BOTTOM edge (reflection) sits right on the divider line.
+     Desktop uses a full-width band (art-directed crop) so it spans the whole
+     footer; mobile keeps a tighter, smaller crop anchored to the right. */
   .footer-art {
     position: absolute;
     right: 0;
     bottom: 0;
     z-index: -2;
-    width: min(46%, 820px);
-    height: auto;
+    width: 82%;
     pointer-events: none;
+  }
+  .footer-art img {
+    display: block;
+    width: 100%;
+    height: auto;
+    opacity: 0.55;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%);
     mask-image: linear-gradient(90deg, transparent, #000 22%);
+  }
+
+  @media (min-width: 721px) {
+    .footer-art {
+      left: 0;
+      width: auto;
+    }
+    .footer-art img {
+      opacity: 1;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
   }
 
   @media (max-width: 720px) {
     .top {
       min-height: 0;
       padding-bottom: 9rem;
-    }
-    .footer-art {
-      width: 82%;
-      opacity: 0.55;
     }
   }
   .brand-logo {
