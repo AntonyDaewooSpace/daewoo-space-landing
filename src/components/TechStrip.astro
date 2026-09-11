@@ -80,11 +80,14 @@ const logos = [
     inset: 0;
     width: 100%;
     height: 100%;
-    /* contain (not cover): the section's height is content-driven and doesn't
-       always match the image's native 1280:240 ratio — cover would crop the
-       sides whenever the section is proportionally taller than that. contain
-       guarantees the full image is always visible, letterboxed into the
-       section's own black background when the ratios don't match. */
+    /* .tv's height is content-driven (logo + tech icons + copy), so it rarely
+       matches tv-section.png's native 1280:240 ratio exactly. `cover` crops
+       the sides whenever the section is proportionally taller than that
+       (common from mobile up to ~1280px wide); `contain` never crops but
+       letterboxes left/right whenever the section is proportionally WIDER
+       than that (common above ~1280px). Neither is right on its own — the
+       script below measures the actual box each time and picks whichever one
+       doesn't crop/pad for real, so this is just the safe pre-JS fallback. */
     object-fit: contain;
     object-position: center;
     z-index: -1;
@@ -149,3 +152,24 @@ const logos = [
     }
   }
 </style>
+
+<script>
+  // Pick cover vs. contain by actually comparing the section's live aspect
+  // ratio to the image's — content-driven height means neither is safe on
+  // its own at every width (see the CSS comment on .tv-bg).
+  const tv = document.querySelector<HTMLElement>('#tv .tv');
+  const bg = document.querySelector<HTMLImageElement>('#tv .tv-bg');
+  if (tv && bg) {
+    const update = () => {
+      const w = tv.clientWidth;
+      const h = tv.clientHeight;
+      const imgW = bg.naturalWidth || 1280;
+      const imgH = bg.naturalHeight || 240;
+      if (!w || !h || !imgW || !imgH) return;
+      bg.style.objectFit = w / h >= imgW / imgH ? 'cover' : 'contain';
+    };
+    if (bg.complete) update();
+    else bg.addEventListener('load', update, { once: true });
+    new ResizeObserver(update).observe(tv);
+  }
+</script>
