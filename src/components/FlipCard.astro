@@ -8,6 +8,16 @@ interface Props {
   clone?: boolean;
 }
 const { category, clone = false } = Astro.props;
+
+// Benefit icons: never a single straight line — grouped into rows (inverted
+// pyramid for the common 5-icon case: 3 on top, 2 centred below).
+const n = category.backBenefits.length;
+const benefitRows =
+  n <= 3
+    ? [category.backBenefits]
+    : n === 4
+      ? [category.backBenefits.slice(0, 2), category.backBenefits.slice(2)]
+      : [category.backBenefits.slice(0, 3), category.backBenefits.slice(3)];
 ---
 
 <article
@@ -31,18 +41,21 @@ const { category, clone = false } = Astro.props;
       <div class="front-body">
         <span class="icon" set:html={category.icon} />
         <h3>{category.frontTitle}</h3>
-        <p>{category.frontText}</p>
       </div>
     </div>
 
     <div class="face back">
       <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={46} densities={[1, 2]} format="png" loading="lazy" decoding="async" />
       <div class="back-desc"><p>{category.backText}</p></div>
-      <ul class="back-benefits" aria-hidden="true">
-        {category.backBenefits.map((b) => (
-          <li><Image src={b} alt="" height={24} densities={[1, 2]} loading="lazy" decoding="async" /></li>
+      <div class="back-benefits" aria-hidden="true">
+        {benefitRows.map((row) => (
+          <ul class="benefits-row">
+            {row.map((b) => (
+              <li><Image src={b} alt="" height={24} densities={[1, 2]} loading="lazy" decoding="async" /></li>
+            ))}
+          </ul>
         ))}
-      </ul>
+      </div>
     </div>
   </div>
 </article>
@@ -146,15 +159,9 @@ const { category, clone = false } = Astro.props;
     height: 100%;
   }
   .front-body h3 {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 700;
     line-height: 1.3;
-  }
-  .front-body p {
-    font-size: 0.625rem;
-    font-weight: 300;
-    line-height: 1.4;
-    color: rgba(255, 255, 255, 0.82);
   }
 
   /* back — rebuilt in HTML at the proportions of the Figma art, but sharp */
@@ -193,7 +200,7 @@ const { category, clone = false } = Astro.props;
     overscroll-behavior: contain;
   }
   .back-desc p {
-    font-size: clamp(0.5rem, 0.42rem + 0.35vw, 0.625rem);
+    font-size: clamp(0.625rem, 0.54rem + 0.4vw, 0.75rem);
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.94);
     text-wrap: pretty;
@@ -204,21 +211,31 @@ const { category, clone = false } = Astro.props;
   .back-desc::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.22);
   }
+  /* icons grouped into rows (see benefitRows above) instead of one wrapped
+     line — a 5-icon card reads as an inverted pyramid: 3 on top, 2 below. */
   .back-benefits {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: clamp(0.4rem, 1.8vw, 0.65rem) clamp(0.55rem, 3.5vw, 1.15rem);
+    gap: clamp(0.4rem, 1.8vw, 0.6rem);
     width: 100%;
-    list-style: none;
     margin: 0;
     padding: clamp(0.45rem, 2vw, 0.7rem) 0 0;
     border-top: 1px solid rgba(255, 255, 255, 0.16);
   }
+  .benefits-row {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.55rem, 3.5vw, 1.15rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
   .back-benefits li {
     flex: 0 0 auto;
-    max-width: 46%;
+    max-width: 30%;
   }
   .back-benefits :global(img) {
     max-width: 100%;

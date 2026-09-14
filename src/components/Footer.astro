@@ -126,6 +126,11 @@ const icons: Record<string, string> = {
     display: block;
     width: 100%;
     height: auto;
+    /* the crop starts partway into the source's glow/vignette, not at pure
+       black, so its top edge would otherwise read as a hard rectangle
+       against the footer's flat background — fade it in instead. */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 16%);
+    mask-image: linear-gradient(to bottom, transparent, #000 16%);
   }
   .brand-logo {
     height: 30px;
@@ -144,6 +149,7 @@ const icons: Record<string, string> = {
     line-height: 1.5;
     color: var(--c-grey-light);
     text-align: justify;
+    text-wrap: pretty;
   }
   .badge {
     flex: none;
@@ -169,7 +175,7 @@ const icons: Record<string, string> = {
     font-size: 0.75rem;
     color: var(--c-grey-light);
   }
-  .copy { max-width: 42ch; }
+  .copy { max-width: 42ch; text-wrap: pretty; }
   .social { display: flex; align-items: center; gap: 0.75rem; }
   .social ul { display: flex; gap: 0.9rem; list-style: none; padding: 0; margin: 0; }
   .social a {
@@ -188,6 +194,7 @@ const icons: Record<string, string> = {
     font-size: 0.6875rem;
     line-height: 1.55;
     color: var(--c-grey);
+    text-wrap: pretty;
   }
 
   @media (max-width: 720px) {
