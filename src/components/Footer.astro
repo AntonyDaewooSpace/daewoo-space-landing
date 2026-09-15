@@ -86,23 +86,27 @@ const icons: Record<string, string> = {
     position: relative;
     padding-bottom: clamp(1.25rem, 3vw, 2rem);
   }
-  /* >=900px: the blurb's badge sits well clear of where the artwork's visible
+  /* >=1100px: the blurb's badge sits well clear of where the artwork's visible
      content starts, so the image can share the row with the text — only its
-     own height needs reserving. */
-  @media (min-width: 900px) {
+     own height needs reserving. (Threshold moved up from 900 when .blurb grew
+     to max-width:620px for the 3-line copy — a wider blurb pushes the badge's
+     right edge further out, so the "safe" viewport width needed for the
+     image's content to clear it moved out too. Re-check this if .blurb's
+     max-width changes again.) */
+  @media (min-width: 1100px) {
     .top {
       min-height: clamp(230px, 21vw, 460px);
     }
   }
-  /* <900px: .blurb's badge can land under/inside the artwork's visible span,
+  /* <1100px: .blurb's badge can land under/inside the artwork's visible span,
      so its height must be reserved as real padding (additive), pushing the
      text up clear of the image instead of just capping a min-height the
      content could still exceed. Two tiers because the mobile art crop (less
      dead space, so it reads at a legible size) is proportionally taller than
      the desktop crop used from 561px up. */
-  @media (max-width: 899px) {
+  @media (max-width: 1099px) {
     .top {
-      padding-bottom: clamp(115px, 21vw, 190px);
+      padding-bottom: clamp(115px, 21vw, 230px);
     }
   }
   @media (max-width: 560px) {
@@ -151,11 +155,11 @@ const icons: Record<string, string> = {
     display: flex;
     align-items: center;
     gap: 1.25rem;
-    max-width: 480px;
+    max-width: 620px;
   }
   .blurb p {
     flex: 1;
-    font-size: 12px;
+    font-size: 15px;
     line-height: 1.5;
     color: var(--c-grey-light);
     text-align: justify;
@@ -185,7 +189,7 @@ const icons: Record<string, string> = {
     font-size: 0.75rem;
     color: var(--c-grey-light);
   }
-  .copy { max-width: 42ch; text-wrap: pretty; }
+  .copy { max-width: 42ch; font-size: 15px; text-wrap: pretty; }
   .social { display: flex; align-items: center; gap: 0.75rem; }
   .social ul { display: flex; gap: 0.9rem; list-style: none; padding: 0; margin: 0; }
   .social a {
@@ -201,7 +205,7 @@ const icons: Record<string, string> = {
 
   .legal {
     margin-top: 1.6rem;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.55;
     color: var(--c-grey);
     text-wrap: pretty;

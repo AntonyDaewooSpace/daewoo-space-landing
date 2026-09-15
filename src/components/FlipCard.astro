@@ -238,11 +238,20 @@ const benefitRows =
     max-width: 30%;
   }
   .back-benefits :global(img) {
-    max-width: 100%;
-    max-height: clamp(20px, 5.5vw, 26px);
+    max-width: 90px;
+    max-height: 24px;
     width: auto;
     height: auto;
     object-fit: contain;
+  }
+  /* .card is min(82vw, 350px) — below ~430px viewport it shrinks below 350,
+     and 3 icons at the full 90px spec no longer fit the row without
+     overflowing the card (clipped by .face's overflow:hidden). Scale the cap
+     down to what the narrowest real phones (320px) have room for. */
+  @media (max-width: 430px) {
+    .back-benefits :global(img) {
+      max-width: 70px;
+    }
   }
 </style>
 
