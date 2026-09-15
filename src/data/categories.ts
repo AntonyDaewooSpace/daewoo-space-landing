@@ -79,6 +79,7 @@ export const categories: Category[] = [
     image: lavadora,
     backLogo: backLogo('lavadora'),
     backBenefits: backBenefits('lavadora'),
+    backBenefitsImage: backBenefitsImage('lavadora'),
     icon: iconLavadora,
     frontTitle: 'El arte de cuidar tu ropa sin esfuerzo',
     frontText:
@@ -110,6 +111,7 @@ export const categories: Category[] = [
     image: cocina,
     backLogo: backLogo('cocina'),
     backBenefits: backBenefits('cocina'),
+    backBenefitsImage: backBenefitsImage('cocina'),
     icon: iconCocina,
     frontTitle: 'Innovación que inspira cada creación.',
     frontText:
@@ -125,6 +127,7 @@ export const categories: Category[] = [
     image: microondas,
     backLogo: backLogo('microondas'),
     backBenefits: backBenefits('microondas'),
+    backBenefitsImage: backBenefitsImage('microondas'),
     icon: iconMicroondas,
     frontTitle: 'Rapidez que simplifica tu día.',
     frontText:
@@ -140,6 +143,7 @@ export const categories: Category[] = [
     image: pilas,
     backLogo: backLogo('pilas'),
     backBenefits: backBenefits('pilas'),
+    backBenefitsImage: backBenefitsImage('pilas'),
     icon: iconPilas,
     frontTitle: 'La energía que impulsa cada momento.',
     frontText:
@@ -155,6 +159,7 @@ export const categories: Category[] = [
     image: aire,
     backLogo: backLogo('aire'),
     backBenefits: backBenefits('aire'),
+    backBenefitsImage: backBenefitsImage('aire'),
     icon: iconAire,
     frontTitle: 'El confort inteligente en cada ambiente',
     frontText:
