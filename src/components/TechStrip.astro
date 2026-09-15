@@ -80,40 +80,22 @@ const logos = [
     inset: 0;
     width: 100%;
     height: 100%;
-    /* .tv's height is content-driven (logo + tech icons + copy), so it rarely
-       matches tv-section.png's native 1280:240 ratio exactly. `cover` crops
-       the sides whenever the section is proportionally taller than that
-       ratio; `contain` never crops but letterboxes left/right whenever the
-       section is proportionally wider. A JS-measured switch (comparing the
-       live box to the image ratio on resize) was tried here and worked in
-       every automated test, but still let a crop through during a real,
-       continuous window-drag — some resize-event race that wasn't
-       reproducible in testing. A plain CSS breakpoint has no such race: it
-       applies synchronously with layout, every single time, no JS in the
-       loop. `contain` below the breakpoint can NEVER crop, by construction —
-       so it's the safe default; `cover` only turns on once .tv-inner's own
-       content-driven height (see below) is measured to keep the section
-       comfortably wide enough not to need any side-crop (see PROJECT
-       memory / git history for the actual measurements — recheck them if
-       .tv-inner's padding/gap/font-sizes ever change, since they shift
-       where this crossover actually falls). */
-    object-fit: contain;
-    object-position: center;
+    /* Always `cover`, at every width — the whole section must show the
+       background image, never a bare black backdrop. `.tv`'s height is
+       content-driven and rarely matches tv-section.png's native 1280:240
+       ratio, so cover crops SOMETHING at most widths (sides when the
+       section is proportionally taller than the image, top/bottom when
+       wider) — that's accepted on purpose now: a `contain` fallback was
+       tried earlier specifically to avoid any crop, but it left visible
+       black letterboxing around the image, which reads as broken/"cut" to
+       the eye even though nothing is technically lost — worse than a crop
+       that keeps the frame full. The right-biased focal point keeps the
+       TVs (the important content, sitting right of centre in the source
+       image) in frame at narrow widths where the sides get cropped; it's a
+       no-op at wide widths where cover crops top/bottom instead. */
+    object-fit: cover;
+    object-position: 78% center;
     z-index: -1;
-  }
-  @media (min-width: 1300px) {
-    .tv-bg {
-      object-fit: cover;
-    }
-  }
-  /* Mobile: match the Figma mobile frame, which zooms into the TVs rather
-     than shrinking the whole wide banner down to fit — cover + a
-     right-biased focal point instead of contain's shrink-to-fit. */
-  @media (max-width: 640px) {
-    .tv-bg {
-      object-fit: cover;
-      object-position: 78% center;
-    }
   }
   .tv::after {
     content: '';
