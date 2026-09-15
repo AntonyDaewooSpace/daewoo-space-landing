@@ -47,15 +47,27 @@ const benefitRows =
     <div class="face back">
       <Image class="back-logo" src={category.backLogo} alt={clone ? '' : category.backTitle} height={46} densities={[1, 2]} format="png" loading="lazy" decoding="async" />
       <div class="back-desc"><p>{category.backText}</p></div>
-      <div class="back-benefits" aria-hidden="true">
-        {benefitRows.map((row) => (
-          <ul class="benefits-row">
-            {row.map((b) => (
-              <li><Image src={b} alt="" height={24} densities={[1, 2]} loading="lazy" decoding="async" /></li>
-            ))}
-          </ul>
-        ))}
-      </div>
+      {category.backBenefitsImage ? (
+        <Image
+          class="back-benefits-image"
+          src={category.backBenefitsImage}
+          alt=""
+          aria-hidden="true"
+          widths={[320, 480, 640]}
+          sizes="320px"
+          loading="lazy"
+        />
+      ) : (
+        <div class="back-benefits" aria-hidden="true">
+          {benefitRows.map((row) => (
+            <ul class="benefits-row">
+              {row.map((b) => (
+                <li><Image src={b} alt="" height={24} densities={[1, 2]} loading="lazy" decoding="async" /></li>
+              ))}
+            </ul>
+          ))}
+        </div>
+      )}
     </div>
   </div>
 </article>
@@ -210,6 +222,16 @@ const benefitRows =
   }
   .back-desc::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.22);
+  }
+  /* categories with a design-provided composite (all benefit icons already
+     laid out as one image) skip the row-built layout entirely. */
+  .back-benefits-image {
+    width: 82%;
+    height: auto;
+    margin-top: clamp(0.45rem, 2vw, 0.7rem);
+    padding-top: clamp(0.45rem, 2vw, 0.7rem);
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+    object-fit: contain;
   }
   /* icons grouped into rows (see benefitRows above) instead of one wrapped
      line — a 5-icon card reads as an inverted pyramid: 3 on top, 2 below. */

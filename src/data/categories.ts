@@ -23,6 +23,12 @@ const backBenefits = (cat: string): ImageMetadata[] =>
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, m]) => m);
 
+// Optional: a category can ship a single pre-composited image with all its
+// benefit icons already laid out (design-provided), used instead of building
+// the row/pyramid from the individual numbered icons.
+const backBenefitsImage = (cat: string): ImageMetadata | undefined =>
+  backAssets[`../assets/cards/back/${cat}/benefits-composite.png`];
+
 import iconTv from '../assets/icons/tv.svg?raw';
 import iconLavadora from '../assets/icons/lavadora.svg?raw';
 import iconRefrigeradora from '../assets/icons/refrigeradora.svg?raw';
@@ -43,6 +49,8 @@ export interface Category {
   /** back face — rebuilt in HTML for full sharpness */
   backLogo: ImageMetadata;
   backBenefits: ImageMetadata[];
+  /** optional: design-provided single image with all benefit icons already laid out */
+  backBenefitsImage?: ImageMetadata;
   backTitle: string;
   backText: string;
 }
@@ -86,6 +94,7 @@ export const categories: Category[] = [
     image: refrigeradora,
     backLogo: backLogo('refrigeradora'),
     backBenefits: backBenefits('refrigeradora'),
+    backBenefitsImage: backBenefitsImage('refrigeradora'),
     icon: iconRefrigeradora,
     frontTitle: 'La frescura que evoluciona contigo.',
     frontText:
