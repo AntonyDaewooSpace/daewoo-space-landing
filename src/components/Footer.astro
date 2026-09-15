@@ -113,11 +113,21 @@ const icons: Record<string, string> = {
   /* appliance render: its BOTTOM edge (reflection) sits right on the divider
      line, full-bleed edge to edge at every breakpoint (art-directed crop —
      mobile keeps proportionally less dead space so the appliances read at a
-     legible size; desktop uses the full source width). */
+     legible size; desktop uses the full source width). `.top` sits inside
+     `.container`'s padding-inline, so left/right:0 alone stops short of the
+     true viewport edge by --pad-x — pull it out past that padding so the
+     image actually reaches the browser edge instead of leaving a visible
+     strip of flat background (and a hard seam) on each side. */
   .footer-art {
+    display: block;
+    /* the global img/picture reset caps max-width at 100% of the containing
+       block (.top) — exactly the width this is trying to bleed past via the
+       negative left/right insets below, so it silently clamped the image
+       back to .top's own (padded-in) width. Escape it. */
+    max-width: none;
     position: absolute;
-    left: 0;
-    right: 0;
+    left: calc(-1 * var(--pad-x));
+    right: calc(-1 * var(--pad-x));
     bottom: 0;
     z-index: -2;
     pointer-events: none;
