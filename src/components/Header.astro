@@ -5,6 +5,11 @@ import { nav } from '../data/site';
 import { BASE, withBase } from '../lib/url';
 
 const link = (href: string) => (href.startsWith('#') ? withBase(href) : href);
+
+// TODO: número de prueba — reemplazar por el WhatsApp real de Daewoo Perú.
+const whatsappNumber = '51999999999';
+const whatsappMsg = 'Hola, quiero afiliarme como distribuidor Daewoo.';
+const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMsg)}`;
 ---
 
 <header class="site-header" id="top">
@@ -13,23 +18,29 @@ const link = (href: string) => (href.startsWith('#') ? withBase(href) : href);
       <Image src={logo} alt="Daewoo" width={214} height={32} loading="eager" />
     </a>
 
-    <button
-      class="burger"
-      type="button"
-      aria-label="Abrir menú"
-      aria-expanded="false"
-      aria-controls="site-nav"
-    >
-      <span></span><span></span><span></span>
-    </button>
+    <div class="right">
+      <nav id="site-nav" class="nav" aria-label="Principal">
+        <ul>
+          {nav.map((item) => (
+            <li><a href={link(item.href)}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
 
-    <nav id="site-nav" class="nav" aria-label="Principal">
-      <ul>
-        {nav.map((item) => (
-          <li><a href={link(item.href)}>{item.label}</a></li>
-        ))}
-      </ul>
-    </nav>
+      <a class="cta-whatsapp" href={whatsappHref} target="_blank" rel="noopener">
+        Afíliate
+      </a>
+
+      <button
+        class="burger"
+        type="button"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="site-nav"
+      >
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
 </header>
 
@@ -114,6 +125,36 @@ const link = (href: string) => (href.startsWith('#') ? withBase(href) : href);
   }
   .is-compact .logo :global(img) {
     height: 18px;
+  }
+
+  .right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .cta-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    padding: 0.6rem 1.35rem;
+    background: var(--c-blue-600);
+    color: var(--c-white);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: 999px;
+    transition: background 0.15s var(--ease), transform 0.15s var(--ease);
+  }
+  .cta-whatsapp:hover {
+    background: var(--c-blue-hover);
+    transform: translateY(-1px);
+  }
+  .is-compact .cta-whatsapp {
+    padding: 0.5rem 1.15rem;
   }
 
   .nav ul {
