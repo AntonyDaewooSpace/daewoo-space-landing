@@ -83,14 +83,28 @@ const logos = [
     /* .tv's height is content-driven (logo + tech icons + copy), so it rarely
        matches tv-section.png's native 1280:240 ratio exactly. `cover` crops
        the sides whenever the section is proportionally taller than that
-       (common from mobile up to ~1280px wide); `contain` never crops but
-       letterboxes left/right whenever the section is proportionally WIDER
-       than that (common above ~1280px). Neither is right on its own — the
-       script below measures the actual box each time and picks whichever one
-       doesn't crop/pad for real, so this is just the safe pre-JS fallback. */
+       ratio; `contain` never crops but letterboxes left/right whenever the
+       section is proportionally wider. A JS-measured switch (comparing the
+       live box to the image ratio on resize) was tried here and worked in
+       every automated test, but still let a crop through during a real,
+       continuous window-drag — some resize-event race that wasn't
+       reproducible in testing. A plain CSS breakpoint has no such race: it
+       applies synchronously with layout, every single time, no JS in the
+       loop. `contain` below the breakpoint can NEVER crop, by construction —
+       so it's the safe default; `cover` only turns on once .tv-inner's own
+       content-driven height (see below) is measured to keep the section
+       comfortably wide enough not to need any side-crop (see PROJECT
+       memory / git history for the actual measurements — recheck them if
+       .tv-inner's padding/gap/font-sizes ever change, since they shift
+       where this crossover actually falls). */
     object-fit: contain;
     object-position: center;
     z-index: -1;
+  }
+  @media (min-width: 1300px) {
+    .tv-bg {
+      object-fit: cover;
+    }
   }
   .tv::after {
     content: '';
@@ -152,29 +166,3 @@ const logos = [
     }
   }
 </style>
-
-<script>
-  // Pick cover vs. contain by actually comparing the section's live aspect
-  // ratio to the image's — content-driven height means neither is safe on
-  // its own at every width (see the CSS comment on .tv-bg).
-  const tv = document.querySelector<HTMLElement>('#tv .tv');
-  const bg = document.querySelector<HTMLImageElement>('#tv .tv-bg');
-  if (tv && bg) {
-    // Hardcoded, not read from bg.naturalWidth/Height: with this responsive
-    // (srcset) + lazy-loaded image, naturalWidth/Height were observed to
-    // track the element's rendered CSS size rather than the loaded
-    // resource's real intrinsic pixels — throwing off the cover/contain
-    // decision while resizing. The source's true ratio never changes, so
-    // just use it directly.
-    const IMG_RATIO = 1280 / 240;
-    const update = () => {
-      const w = tv.clientWidth;
-      const h = tv.clientHeight;
-      if (!w || !h) return;
-      bg.style.objectFit = w / h >= IMG_RATIO ? 'cover' : 'contain';
-    };
-    update();
-    new ResizeObserver(update).observe(tv);
-    window.addEventListener('resize', update, { passive: true });
-  }
-</script>
