@@ -160,16 +160,21 @@ const logos = [
   const tv = document.querySelector<HTMLElement>('#tv .tv');
   const bg = document.querySelector<HTMLImageElement>('#tv .tv-bg');
   if (tv && bg) {
+    // Hardcoded, not read from bg.naturalWidth/Height: with this responsive
+    // (srcset) + lazy-loaded image, naturalWidth/Height were observed to
+    // track the element's rendered CSS size rather than the loaded
+    // resource's real intrinsic pixels — throwing off the cover/contain
+    // decision while resizing. The source's true ratio never changes, so
+    // just use it directly.
+    const IMG_RATIO = 1280 / 240;
     const update = () => {
       const w = tv.clientWidth;
       const h = tv.clientHeight;
-      const imgW = bg.naturalWidth || 1280;
-      const imgH = bg.naturalHeight || 240;
-      if (!w || !h || !imgW || !imgH) return;
-      bg.style.objectFit = w / h >= imgW / imgH ? 'cover' : 'contain';
+      if (!w || !h) return;
+      bg.style.objectFit = w / h >= IMG_RATIO ? 'cover' : 'contain';
     };
-    if (bg.complete) update();
-    else bg.addEventListener('load', update, { once: true });
+    update();
     new ResizeObserver(update).observe(tv);
+    window.addEventListener('resize', update, { passive: true });
   }
 </script>
