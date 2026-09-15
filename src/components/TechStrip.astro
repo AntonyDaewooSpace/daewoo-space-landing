@@ -106,6 +106,15 @@ const logos = [
       object-fit: cover;
     }
   }
+  /* Mobile: match the Figma mobile frame, which zooms into the TVs rather
+     than shrinking the whole wide banner down to fit — cover + a
+     right-biased focal point instead of contain's shrink-to-fit. */
+  @media (max-width: 640px) {
+    .tv-bg {
+      object-fit: cover;
+      object-position: 78% center;
+    }
+  }
   .tv::after {
     content: '';
     position: absolute;

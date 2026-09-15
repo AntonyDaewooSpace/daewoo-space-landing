@@ -237,20 +237,24 @@ const benefitRows =
     flex: 0 0 auto;
     max-width: 30%;
   }
+  /* Fixed 90x24 slot for every icon (not just a cap) so all of them sit in a
+     uniform-size box regardless of their own source aspect ratio (these vary
+     a lot, 2.5:1 to 6.8:1) — object-fit:contain keeps each icon's own art
+     undistorted, letterboxed within the slot. */
   .back-benefits :global(img) {
-    max-width: 90px;
-    max-height: 24px;
-    width: auto;
-    height: auto;
+    width: 90px;
+    height: 24px;
     object-fit: contain;
   }
   /* .card is min(82vw, 350px) — below ~430px viewport it shrinks below 350,
-     and 3 icons at the full 90px spec no longer fit the row without
-     overflowing the card (clipped by .face's overflow:hidden). Scale the cap
-     down to what the narrowest real phones (320px) have room for. */
+     and 3 fixed 90px-wide slots per row no longer fit without overflowing
+     the card (clipped by .face's overflow:hidden). Scale the slot down
+     (same 90:24 = 3.75:1 ratio) to what the narrowest real phones (320px)
+     have room for. */
   @media (max-width: 430px) {
     .back-benefits :global(img) {
-      max-width: 70px;
+      width: 70px;
+      height: calc(70px / 3.75);
     }
   }
 </style>
