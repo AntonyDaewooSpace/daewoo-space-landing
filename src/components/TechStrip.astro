@@ -112,7 +112,10 @@ const logos = [
     gap: 0.85rem;
     width: fit-content;
     max-width: min(92vw, 600px);
-    margin-left: max(var(--pad-x), calc((100vw - var(--container)) / 2));
+    /* must match Launches' --gutter formula exactly (+ var(--pad-x) at the
+       end) so this text lines up with "Próximos lanzamientos" — this was
+       missing that term, sitting one --pad-x too far left. */
+    margin-left: max(var(--pad-x), calc((100vw - var(--container)) / 2 + var(--pad-x)));
     padding-block: clamp(1.75rem, 4.5vw, 2.75rem);
     padding-right: var(--pad-x);
   }
