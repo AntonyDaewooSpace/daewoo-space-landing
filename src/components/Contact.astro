@@ -104,14 +104,25 @@ const fields = [
     color: var(--c-white);
     padding-block: var(--section-y);
   }
+  /* the 233px below is measured from the true viewport edge, not from
+     inside the centered `.container` — so this section can't use the
+     standard centered container (its content edge already eats into that
+     233px, and grows past it on wide screens, stacking on top of it
+     instead of being replaced by it). Same full-bleed override Footer/TV
+     use, then the grid supplies its own edge padding directly. */
+  .contact :global(.container) {
+    max-width: none;
+  }
   .grid {
     display: grid;
     gap: clamp(2rem, 6vw, 6rem);
     align-items: center;
   }
   @media (min-width: 861px) {
-    .grid { grid-template-columns: 1fr 1fr; }
-    .cta { padding-left: 233px; }
+    .grid {
+      grid-template-columns: 1fr 1fr;
+      padding-left: 233px;
+    }
   }
 
   .cta h2 {
